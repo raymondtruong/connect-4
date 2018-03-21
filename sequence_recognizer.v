@@ -7,18 +7,18 @@ module sequence_recognizer(next, reset, in, out);
 	input next;
 	input reset;
 	input [1:0] in;
-	output reg [1:0] out;
+	output reg [1:0] out = 2'd0;
 	
-	reg [2:0] current_state, next_state;
-	localparam INITIAL = 3'd0,
-				  RED_1 = 3'd1,
-				  RED_2 = 3'd2,
-				  RED_3 = 3'd3,
-				  RED_WIN = 3'd4,
-				  YELLOW_1 = 3'd5,
-				  YELLOW_2 = 3'd6,
-				  YELLOW_3 = 3'd7,
-				  YELLOW_WIN = 3'd8;
+	reg [3:0] current_state, next_state;
+	localparam INITIAL = 4'd0,
+				  RED_1 = 4'd1,
+				  RED_2 = 4'd2,
+				  RED_3 = 4'd3,
+				  RED_WIN = 4'd4,
+				  YELLOW_1 = 4'd5,
+				  YELLOW_2 = 4'd6,
+				  YELLOW_3 = 4'd7,
+				  YELLOW_WIN = 4'd8;
 				  
 	// State table
 	always @(*)
@@ -88,11 +88,11 @@ module sequence_recognizer(next, reset, in, out);
 	always @(*)
 	begin
 		if (current_state == RED_WIN) 
-			out = 2'b01;
+			out <= 2'b01;
 		else if (current_state == YELLOW_WIN)
-			out = 2'b10;
+			out <= 2'b10;
 		else
-			out = 2'b00;
+			out <= 2'b00;
 	end
 	
 endmodule
