@@ -33,6 +33,38 @@
 //authorized distributors.  Please refer to the applicable 
 //agreement for further details.
 
+module GameBoard(Clk, SW, enable);
+input Clk;
+input enable;
+input [9:0] SW;
+//input reset_n;
+reg [5:0] address = 6'd0;
+wire [1:0] out;
+reg [98:0] gameBoardSequence = 98'd1;
+
+
+ramTP ram(
+.address(address),
+.clock(Clk),
+.data(SW[1:0]),
+.wren(SW[9]),
+.q(out[1:0])
+);
+
+// Changes the address synchornously with the clock and resets if the max value is reached or if reset_n is high.
+always @(posedge Clk)
+begin 
+	if (address == 6'd49 || SW[8])
+		address <= 6'd0;
+	else if (enable)
+		gameBoardSequence <= gameBoardSequence << 3;
+		gameBoardSequence <= {gameBoardSequence[95:0], out, 1'b0};
+		address <= address + 1'd1;
+	
+end 
+
+endmodule
+
 
 // synopsys translate_off
 `timescale 1 ps / 1 ps
@@ -88,7 +120,7 @@ module ramTP (
 		altsyncram_component.clock_enable_input_a = "BYPASS",
 		altsyncram_component.clock_enable_output_a = "BYPASS",
 		altsyncram_component.intended_device_family = "Cyclone V",
-		altsyncram_component.lpm_hint = "ENABLE_RUNTIME_MOD=NO",
+		altsyncram_component.lpm_hint = "enable_RUNTIME_MOD=NO",
 		altsyncram_component.lpm_type = "altsyncram",
 		altsyncram_component.numwords_a = 64,
 		altsyncram_component.operation_mode = "SINGLE_PORT",
@@ -111,18 +143,18 @@ endmodule
 // Retrieval info: PRIVATE: AclrByte NUMERIC "0"
 // Retrieval info: PRIVATE: AclrData NUMERIC "0"
 // Retrieval info: PRIVATE: AclrOutput NUMERIC "0"
-// Retrieval info: PRIVATE: BYTE_ENABLE NUMERIC "0"
+// Retrieval info: PRIVATE: BYTE_enable NUMERIC "0"
 // Retrieval info: PRIVATE: BYTE_SIZE NUMERIC "8"
 // Retrieval info: PRIVATE: BlankMemory NUMERIC "1"
-// Retrieval info: PRIVATE: CLOCK_ENABLE_INPUT_A NUMERIC "0"
-// Retrieval info: PRIVATE: CLOCK_ENABLE_OUTPUT_A NUMERIC "0"
+// Retrieval info: PRIVATE: CLOCK_enable_INPUT_A NUMERIC "0"
+// Retrieval info: PRIVATE: CLOCK_enable_OUTPUT_A NUMERIC "0"
 // Retrieval info: PRIVATE: Clken NUMERIC "0"
 // Retrieval info: PRIVATE: DataBusSeparated NUMERIC "1"
 // Retrieval info: PRIVATE: IMPLEMENT_IN_LES NUMERIC "0"
 // Retrieval info: PRIVATE: INIT_FILE_LAYOUT STRING "PORT_A"
 // Retrieval info: PRIVATE: INIT_TO_SIM_X NUMERIC "0"
 // Retrieval info: PRIVATE: INTENDED_DEVICE_FAMILY STRING "Cyclone V"
-// Retrieval info: PRIVATE: JTAG_ENABLED NUMERIC "0"
+// Retrieval info: PRIVATE: JTAG_enableD NUMERIC "0"
 // Retrieval info: PRIVATE: JTAG_ID STRING "NONE"
 // Retrieval info: PRIVATE: MAXIMUM_DEPTH NUMERIC "0"
 // Retrieval info: PRIVATE: MIFfilename STRING ""
@@ -140,10 +172,10 @@ endmodule
 // Retrieval info: PRIVATE: WidthData NUMERIC "2"
 // Retrieval info: PRIVATE: rden NUMERIC "0"
 // Retrieval info: LIBRARY: altera_mf altera_mf.altera_mf_components.all
-// Retrieval info: CONSTANT: CLOCK_ENABLE_INPUT_A STRING "BYPASS"
-// Retrieval info: CONSTANT: CLOCK_ENABLE_OUTPUT_A STRING "BYPASS"
+// Retrieval info: CONSTANT: CLOCK_enable_INPUT_A STRING "BYPASS"
+// Retrieval info: CONSTANT: CLOCK_enable_OUTPUT_A STRING "BYPASS"
 // Retrieval info: CONSTANT: INTENDED_DEVICE_FAMILY STRING "Cyclone V"
-// Retrieval info: CONSTANT: LPM_HINT STRING "ENABLE_RUNTIME_MOD=NO"
+// Retrieval info: CONSTANT: LPM_HINT STRING "enable_RUNTIME_MOD=NO"
 // Retrieval info: CONSTANT: LPM_TYPE STRING "altsyncram"
 // Retrieval info: CONSTANT: NUMWORDS_A NUMERIC "64"
 // Retrieval info: CONSTANT: OPERATION_MODE STRING "SINGLE_PORT"
