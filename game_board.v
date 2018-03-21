@@ -1,8 +1,7 @@
 
-module game_board(Clk, enable, reset, out);
+module game_board(Clk, reset, out);
 	input Clk;
 	input enable;
-	input reset;
 	
 	wire [1:0] q;
 	
@@ -22,9 +21,9 @@ module game_board(Clk, enable, reset, out);
 	// Populate board
 	always @(posedge Clk)
 	begin 
-		if (address == 6'd49 || ~reset)
+		if (~enable)							// reset address to 0 if enable is low
 			address <= 6'd0;
-		else if (enable)
+		else if (address != 6'd98)		// otherwise, keep incrementing until we hit the max address (98) and  stopthere
 		begin
 			board <= board << 2;						// shift over to next piece
 			board <= {board[95:0], q};				// read from memory at that location
