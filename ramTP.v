@@ -43,13 +43,13 @@ wire [1:0] out;
 reg [98:0] gameBoardSequence = 98'd1;
 
 // Assign registers which will be used to evaluate the current state of the rows in the game board.
-reg [13:0] row_0;
-reg [13:0] row_1;
-reg [13:0] row_2;
-reg [13:0] row_3;
-reg [13:0] row_4;
-reg [13:0] row_5;
-reg [13:0] row_6;
+wire [13:0] row_0;
+wire [13:0] row_1;
+wire [13:0] row_2;
+wire [13:0] row_3;
+wire [13:0] row_4;
+wire [13:0] row_5;
+wire [13:0] row_6;
 
 assign row_0 = gameBoardSequence[13:0];
 assign row_1 = gameBoardSequence[27:14];
@@ -60,25 +60,25 @@ assign row_5 = gameBoardSequence[83:70];
 assign row_6 = gameBoardSequence[98:84]; 
 
 // Assign registers which will be used to evaluate the current state of the columns in the game board.
-reg [13:0] column_0;
-reg [13:0] column_1;
-reg [13:0] column_2;
-reg [13:0] column_3;
-reg [13:0] column_4;
-reg [13:0] column_5;
-reg [13:0] column_6;
+wire [13:0] column_0;
+wire [13:0] column_1;
+wire [13:0] column_2;
+wire [13:0] column_3;
+wire [13:0] column_4;
+wire [13:0] column_5;
+wire [13:0] column_6;
 
-assign column_0 = {gameBoardSequence[0], gameBoardSequence[7], gameBoardSequence[14], gameBoardSequence[21], gameBoardSequence[28], gameBoardSequence[35], gameBoardSequence[42]}
-assign column_1 = {gameBoardSequence[1], gameBoardSequence[8], gameBoardSequence[15], gameBoardSequence[22], gameBoardSequence[29], gameBoardSequence[36], gameBoardSequence[43]}
-assign column_2 = {gameBoardSequence[2], gameBoardSequence[9], gameBoardSequence[16], gameBoardSequence[23], gameBoardSequence[30], gameBoardSequence[37], gameBoardSequence[44]}
-assign column_3 = {gameBoardSequence[3], gameBoardSequence[10], gameBoardSequence[17], gameBoardSequence[24], gameBoardSequence[31], gameBoardSequence[38], gameBoardSequence[45]}
-assign column_4 = {gameBoardSequence[4], gameBoardSequence[11], gameBoardSequence[18], gameBoardSequence[25], gameBoardSequence[32], gameBoardSequence[39], gameBoardSequence[46]}
-assign column_5 = {gameBoardSequence[5], gameBoardSequence[12], gameBoardSequence[19], gameBoardSequence[26], gameBoardSequence[33], gameBoardSequence[40], gameBoardSequence[47]}
-assign column_6 = {gameBoardSequence[6], gameBoardSequence[13], gameBoardSequence[20], gameBoardSequence[27], gameBoardSequence[34], gameBoardSequence[41], gameBoardSequence[48]}
+assign column_0 = {gameBoardSequence[0], gameBoardSequence[7], gameBoardSequence[14], gameBoardSequence[21], gameBoardSequence[28], gameBoardSequence[35], gameBoardSequence[42]};
+assign column_1 = {gameBoardSequence[1], gameBoardSequence[8], gameBoardSequence[15], gameBoardSequence[22], gameBoardSequence[29], gameBoardSequence[36], gameBoardSequence[43]};
+assign column_2 = {gameBoardSequence[2], gameBoardSequence[9], gameBoardSequence[16], gameBoardSequence[23], gameBoardSequence[30], gameBoardSequence[37], gameBoardSequence[44]};
+assign column_3 = {gameBoardSequence[3], gameBoardSequence[10], gameBoardSequence[17], gameBoardSequence[24], gameBoardSequence[31], gameBoardSequence[38], gameBoardSequence[45]};
+assign column_4 = {gameBoardSequence[4], gameBoardSequence[11], gameBoardSequence[18], gameBoardSequence[25], gameBoardSequence[32], gameBoardSequence[39], gameBoardSequence[46]};
+assign column_5 = {gameBoardSequence[5], gameBoardSequence[12], gameBoardSequence[19], gameBoardSequence[26], gameBoardSequence[33], gameBoardSequence[40], gameBoardSequence[47]};
+assign column_6 = {gameBoardSequence[6], gameBoardSequence[13], gameBoardSequence[20], gameBoardSequence[27], gameBoardSequence[34], gameBoardSequence[41], gameBoardSequence[48]};
 
 // we have (49 * 2) - 24 possible positions and we have 13 2'b00 buffers so we need (74 + 26) = 100 bits
-reg [99:0] diagonals;
-assign diagonals = {gameBoardSequence[3], gameBoardSequence[11], gameBoardSequence[19], gameBoardSequence[27], 2'b00 gameBoardSequence[2], 
+wire [99:0] diagonals;
+assign diagonals = {gameBoardSequence[3], gameBoardSequence[11], gameBoardSequence[19], gameBoardSequence[27], 2'b00,  gameBoardSequence[2], 
 					gameBoardSequence[10], gameBoardSequence[18], gameBoardSequence[26], gameBoardSequence[34], 2'b00, gameBoardSequence[1], 
 					gameBoardSequence[9], gameBoardSequence[17], gameBoardSequence[25], gameBoardSequence[33], gameBoardSequence[41],
 					2'b00, gameBoardSequence[0], gameBoardSequence[8], gameBoardSequence[16], gameBoardSequence[24],gameBoardSequence[32], 
@@ -97,7 +97,7 @@ assign diagonals = {gameBoardSequence[3], gameBoardSequence[11], gameBoardSequen
 // Wire which contains all winning combinations 
 // we need 100 bits for diagonals, 14 * 14 for the rows and columns and 2 * 14 bit for the buffers = 324 bits
 wire [323:0] winningCombinations = {row_0, 2'b00, row_1, 2'b00, row_2, 2'b00, row_3, 2'b00, row_4, 2'b00, row_5, 2'b00, row_6,
-								2'b00, column_0, 2'b00, column_1, 2'b00, column_2, 2'b00, column_3, 2'b00, column_4, 2'b00, column_5, 2'b00, column_6
+								2'b00, column_0, 2'b00, column_1, 2'b00, column_2, 2'b00, column_3, 2'b00, column_4, 2'b00, column_5, 2'b00, column_6,
 								2'b00, diagonals};
 
 ramTP ram(
