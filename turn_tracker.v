@@ -7,7 +7,7 @@ module turn_tracker(enable, clk, reset, q);
 
 	always @(posedge clk)
 	begin
-		if (~reset)
+		if (reset)
 			q <= 2'b01;
 		else if (enable && q == 2'b01) 
 			q <= 2'b10;

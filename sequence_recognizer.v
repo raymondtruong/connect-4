@@ -2,9 +2,9 @@
 // to the same as the input piece when if it detects four of them in a row. Accepts a "go" signal
 // and a synchronous active-low reset.
 
-module sequence_recognizer(next, reset, in, out);
+module sequence_recognizer(clock, reset, in, out);
     	
-	input next;
+	input clock;
 	input reset;
 	input [1:0] in;
 	output reg [1:0] out = 2'd0;
@@ -76,7 +76,7 @@ module sequence_recognizer(next, reset, in, out);
 	end
    
 	// State register
-	always @(posedge next)
+	always @(posedge clock)
 	begin
 		if (reset == 1'b0)
 			current_state <= INITIAL;
