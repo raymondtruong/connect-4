@@ -129,16 +129,110 @@ module main(CLOCK_50, SW, KEY, LEDR, HEX5, HEX2, HEX0, HEX1);
 			column_count <= column_6_count;
 		end
 
-		address <= (column) + (5'd7 * (5'd6 - column_count)); 
+		address <= (column) + (5'd7 * (5'd6 - column_count));
+
+		// New way of writing to our board register 
+		board[((column * 2) + (5'd14 * (5'd6 - column_count))] = turn[0];
+		board[((column * 2) + (5'd14 * (5'd6 - column_count)) + 1] = turn[1];
 	end
 	
 	
-	
-	
-	
-	
-	// multiple constant drivers
+	//			/////////////////////////////////////////////////////////////////
+			//                 Extract winning combos from the board
+			/////////////////////////////////////////////////////////////////
+			row_0 <= board[13:0];
+			row_1 <= board[27:14];
+			row_2 <= board[41:28];
+			row_3 <= board[55:42];
+			row_4 <= board[69:56];
+			row_5 <= board[83:70];
+			row_6 <= board[97:84]; 
+			column_0 <= {board[0], board[1], 
+										board[14], board[15],
+										board[28], board[29],
+										board[42], board[43], 
+										board[56], board[57],
+										board[70], board[71],
+										board[84], board[85]};
+			column_1 <= {board[2], board[3], 
+										board[16], board[17],
+										board[30], board[31],
+										board[44], board[45], 
+										board[58], board[59],
+										board[72], board[73],
+										board[86], board[87]};
+			column_2 <= {board[4], board[5], 
+										board[18], board[19],
+										board[32], board[33],
+										board[46], board[47], 
+										board[60], board[61],
+										board[74], board[75],
+										board[88], board[89]};
+			column_3 <= {board[6], board[7], 
+										board[20], board[21],
+										board[34], board[35],
+										board[48], board[49], 
+										board[62], board[63],
+										board[76], board[77],
+										board[90], board[91]};
+			column_4 <= {board[8], board[9], 
+										board[22], board[23],
+										board[36], board[37],
+										board[50], board[51], 
+										board[64], board[65],
+										board[78], board[79],
+										board[92], board[93]};
+			column_5 <= {board[10], board[11], 
+										board[24], board[25],
+										board[38], board[39],
+										board[52], board[53], 
+										board[66], board[67],
+										board[80], board[81],
+										board[94], board[95]};
+			column_6 <= {board[12], board[13], 
+										board[26], board[27],
+										board[40], board[41],
+										board[54], board[55], 
+										board[68], board[69],
+										board[82], board[83],
+										board[96], board[97]};
+			diagonal_0 <= {board[6], board[7], board[22], board[23], board[38], board[39], board[54], board[55], 2'b00,
+									 board[4], board[5], board[20], board[21], board[36], board[37], board[52], board[53], board[68], board[69], 2'b00,
+									 board[2], board[3], board[18], board[19], board[34], board[35], board[50], board[51], board[66], board[67], board[82], board[83], 2'b00,
+									 board[0], board[1], board[16], board[17], board[32], board[33], board[48], board[49], board[64], board[65], board[80], board[81], board[96], board[97], 2'b00,
+									 board[14], board[15], board[30], board[31], board[46], board[47], board[62], board[63], board[78], board[79], board[94], board[95], 2'b00,
+									 board[28], board[29], board[44], board[45], board[60], board[61], board[76], board[77], board[92], board[93], 2'b00,
+									 board[42], board[43], board[58], board[59], board[74], board[75], board[90], board[91]};
+			diagonal_1 <= {board[42], board[43], board[30], board[31], board[18], board[19], board[6], board[7], 2'b00,
+									 board[56], board[57], board[44], board[45], board[32], board[33], board[20], board[21], board[8], board[9], 2'b00,
+									 board[70], board[71], board[58], board[59], board[46], board[47], board[34], board[35], board[22], board[23], board[10], board[11], 2'b00,
+									 board[84], board[85], board[72], board[73], board[60], board[61], board[48], board[49], board[36], board[37], board[24], board[25], board[12], board[13], 2'b00,
+									 board[86], board[87], board[74], board[75], board[62], board[63], board[50], board[51], board[38], board[39], board[26], board[27], 2'b00,
+									 board[88], board[89], board[76], board[77], board[64], board[65], board[52], board[53], board[40], board[41], 2'b00,
+									 board[90], board[91], board[78], board[79], board[66], board[67], board[54], board[55]};
 
+	
+	
+
+/////////////////////////////////////////////////////////////////
+			//                Detect win
+			/////////////////////////////////////////////////////////////////
+	combos <= {row_0, 2'b00, row_1, 2'b00, row_2, 2'b00, row_3, 2'b00, row_4, 2'b00, row_5, 2'b00, row_6, 2'b00,
+							column_0, 2'b00, column_1, 2'b00, column_2, 2'b00, column_3, 2'b00, column_4, 2'b00, column_5, 2'b00, column_6,	2'b00, 
+							diagonal_0, 2'b00, diagonal_1};
+	sequence_recognizer rec(CLOCK_50, reset, combos[397:396], LEDR[0]);
+
+	// New way of shifting the board to be analyzed
+	always @(~go)
+	begin
+		always @(posedge CLOCK_50)
+		begin
+			combos <= combos << 2;						// shift over to next piece
+		end
+	end
+
+////// We can delete the below now i believe
+// multiple constant drivers
 	always @(posedge CLOCK_50)
 	begin
 
