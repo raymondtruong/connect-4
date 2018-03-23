@@ -34,7 +34,7 @@ module sequence_recognizer(clock, enable, combos, out);
 	input [397:0] combos;
 	output reg [1:0] out = 2'd0;
 	
-    shifter ss(CLOCK_50, enable, combos, in);
+    shifter ss(clock, ~enable, combos, in);
 
 	
 	reg [3:0] current_state, next_state;
