@@ -2,14 +2,18 @@
 // to the same as the input piece when if it detects four of them in a row. Accepts a "go" signal
 // and a synchronous active-low reset.
 
-module sequence_recognizer(clock, reset, in, out);
-    	
+//module sequence_recognizer(clock, reset, in, out);
+  modue sequence_recognizer(clock, enable, out);  	
 	input clock;
-	input reset;
-	input [1:0] in;
+	input enable;
+	//input reset;
+	//input [1:0] in;
 	output reg [1:0] out = 2'd0;
+	reg [1:0] current_cell_value;
+
 	
 	reg [3:0] current_state, next_state;
+
 	localparam INITIAL = 4'd0,
 				  RED_1 = 4'd1,
 				  RED_2 = 4'd2,
