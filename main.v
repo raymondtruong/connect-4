@@ -23,6 +23,15 @@ module main(CLOCK_50, SW, KEY, LEDR);
 				 c_20, c_21, c_22, c_23, c_24, c_25, c_26, c_27, c_28, c_29,
 				 c_30, c_31, c_32, c_33, c_34, c_35, c_36, c_37, c_38, c_39,
 				 c_40, c_41, c_42, c_43, c_44, c_45, c_46, c_47, c_48;
+	// Initialize each cell to 00
+	// Credit: https://stackoverflow.com/questions/45512230/verilog-assigning-multiple-regs-or-wires-to-the-same-value
+	initial begin
+		{c_0, c_1, c_2, c_3, c_4, c_5, c_6, c_7, c_8, c_9, 
+		 c_10, c_11, c_12, c_13, c_14, c_15, c_16, c_17, c_18, c_19,
+		 c_20, c_21, c_22, c_23, c_24, c_25, c_26, c_27, c_28, c_29,
+		 c_30, c_31, c_32, c_33, c_34, c_35, c_36, c_37, c_38, c_39,
+		 c_40, c_41, c_42, c_43, c_44, c_45, c_46, c_47, c_48} = 2'b00;
+	end
 	reg [97:0] board; 
 	
 	reg [397:0] combos;
@@ -94,56 +103,155 @@ module main(CLOCK_50, SW, KEY, LEDR);
 		// Determine what cell to go into
 		cell_number <= column + (5'd7 * (5'd6 - column_count)); 
 
+		// Write to the cell if nothing's there
 		case (cell_number)
-			6'd0: c_0 <= turn;
-			6'd1: c_1 <= turn;
-			6'd2: c_2 <= turn;
-			6'd3: c_3 <= turn;
-			6'd4: c_4 <= turn;
-			6'd5: c_5 <= turn;
-			6'd6: c_6 <= turn;
-			6'd7: c_7 <= turn;
-			6'd8: c_8 <= turn;
-			6'd9: c_9 <= turn;
-			6'd10: c_10 <= turn;
-			6'd11: c_11 <= turn;
-			6'd12: c_12 <= turn;
-			6'd13: c_13 <= turn;
-			6'd14: c_14 <= turn;
-			6'd15: c_15 <= turn;
-			6'd16: c_16 <= turn;
-			6'd17: c_17 <= turn;
-			6'd18: c_18 <= turn;
-			6'd19: c_19 <= turn;
-			6'd20: c_20 <= turn;
-			6'd21: c_21 <= turn;
-			6'd22: c_22 <= turn;
-			6'd23: c_23 <= turn;
-			6'd24: c_24 <= turn;
-			6'd25: c_25 <= turn;
-			6'd26: c_26 <= turn;
-			6'd27: c_27 <= turn;
-			6'd28: c_28 <= turn;
-			6'd29: c_29 <= turn;
-			6'd30: c_30 <= turn;
-			6'd31: c_31 <= turn;
-			6'd32: c_32 <= turn;
-			6'd33: c_33 <= turn;
-			6'd34: c_34 <= turn;
-			6'd35: c_35 <= turn;
-			6'd36: c_36 <= turn;
-			6'd37: c_37 <= turn;
-			6'd38: c_38 <= turn;
-			6'd39: c_39 <= turn;
-			6'd40: c_40 <= turn;
-			6'd41: c_41 <= turn;
-			6'd42: c_42 <= turn;
-			6'd43: c_43 <= turn;
-			6'd44: c_44 <= turn;
-			6'd45: c_45 <= turn;
-			6'd46: c_46 <= turn;
-			6'd47: c_47 <= turn;
-			6'd48: c_48 <= turn;
+			6'd0: begin
+					if (c_0 == 2'b00) c_0 <= turn;
+					end
+			6'd1: begin
+					if (c_1 == 2'b00) c_1 <= turn;
+					end
+			6'd2: begin
+					if (c_2 == 2'b00) c_2 <= turn;
+					end
+			6'd3: begin
+					if (c_3 == 2'b00) c_3 <= turn;
+					end
+			6'd4: begin
+					if (c_4 == 2'b00) c_4 <= turn;
+					end
+			6'd5: begin
+					if (c_5 == 2'b00) c_5 <= turn;
+					end
+			6'd6: begin
+					if (c_6 == 2'b00) c_6 <= turn;
+					end
+			6'd7: begin
+					if (c_7 == 2'b00) c_7 <= turn;
+					end
+			6'd8: begin
+					if (c_8 == 2'b00) c_8 <= turn;
+					end
+			6'd9: begin
+					if (c_9 == 2'b00) c_9 <= turn;
+					end
+			6'd10: begin
+					if (c_10 == 2'b00) c_10 <= turn;
+					end
+			6'd11: begin
+					if (c_11 == 2'b00) c_11 <= turn;
+					end
+			6'd12: begin
+					if (c_12 == 2'b00) c_12 <= turn;
+					end
+			6'd13: begin
+					if (c_13 == 2'b00) c_13 <= turn;
+					end
+			6'd14: begin
+					if (c_14 == 2'b00) c_14 <= turn;
+					end
+			6'd15: begin
+					if (c_15 == 2'b00) c_15 <= turn;
+					end
+			6'd16: begin
+					if (c_16 == 2'b00) c_16 <= turn;
+					end
+			6'd17: begin
+					if (c_17 == 2'b00) c_17 <= turn;
+					end
+			6'd18: begin
+					if (c_18 == 2'b00) c_18 <= turn;
+					end
+			6'd19: begin
+					if (c_19 == 2'b00) c_19 <= turn;
+					end
+			6'd20: begin
+					if (c_20 == 2'b00) c_20 <= turn;
+					end
+			6'd21: begin
+					if (c_21 == 2'b00) c_21 <= turn;
+					end
+			6'd22: begin
+					if (c_22 == 2'b00) c_22 <= turn;
+					end
+			6'd23: begin
+					if (c_23 == 2'b00) c_23 <= turn;
+					end
+			6'd24: begin
+					if (c_24 == 2'b00) c_24 <= turn;
+					end
+			6'd25: begin
+					if (c_25 == 2'b00) c_25 <= turn;
+					end
+			6'd26: begin
+					if (c_26 == 2'b00) c_26 <= turn;
+					end
+			6'd27: begin
+					if (c_27 == 2'b00) c_27 <= turn;
+					end
+			6'd28: begin
+					if (c_28 == 2'b00) c_28 <= turn;
+					end
+			6'd29: begin
+					if (c_29 == 2'b00) c_29 <= turn;
+					end
+			6'd30: begin
+					if (c_30 == 2'b00) c_30 <= turn;
+					end
+			6'd31: begin
+					if (c_31 == 2'b00) c_31 <= turn;
+					end
+			6'd32: begin
+					if (c_32 == 2'b00) c_32 <= turn;
+					end
+			6'd33: begin
+					if (c_33 == 2'b00) c_33 <= turn;
+					end
+			6'd34: begin
+					if (c_34 == 2'b00) c_34 <= turn;
+					end
+			6'd35: begin
+					if (c_35 == 2'b00) c_35 <= turn;
+					end
+			6'd36: begin
+					if (c_36 == 2'b00) c_36 <= turn;
+					end
+			6'd37: begin
+					if (c_37 == 2'b00) c_37 <= turn;
+					end
+			6'd38: begin
+					if (c_38 == 2'b00) c_38 <= turn;
+					end
+			6'd39: begin
+					if (c_39 == 2'b00) c_39 <= turn;
+					end
+			6'd40: begin
+					if (c_40 == 2'b00) c_40 <= turn;
+					end
+			6'd41: begin
+					if (c_41 == 2'b00) c_41 <= turn;
+					end
+			6'd42: begin
+					if (c_42 == 2'b00) c_42 <= turn;
+					end
+			6'd43: begin
+					if (c_43 == 2'b00) c_43 <= turn;
+					end
+			6'd44: begin
+					if (c_44 == 2'b00) c_44 <= turn;
+					end
+			6'd45: begin
+					if (c_45 == 2'b00) c_45 <= turn;
+					end
+			6'd46: begin
+					if (c_46 == 2'b00) c_46 <= turn;
+					end
+			6'd47: begin
+					if (c_47 == 2'b00) c_47 <= turn;
+					end
+			6'd48: begin
+					if (c_48 == 2'b00) c_48 <= turn;
+					end
 		endcase
 		
 		// Assemble board
@@ -258,7 +366,7 @@ module main(CLOCK_50, SW, KEY, LEDR);
 	/////////////////////////////////////////////////////////////////////////////
 	
 	wire [1:0] winner;
-	sequence_recognizer(CLOCK_50, go, combos, winner);
+	// sequence_recognizer rec(CLOCK_50, go, combos, winner);
 	
 	
 	
