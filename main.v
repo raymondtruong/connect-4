@@ -366,7 +366,7 @@ module main(CLOCK_50, SW, KEY, LEDR);
 	/////////////////////////////////////////////////////////////////////////////
 	
 	wire [1:0] winner;
-	// sequence_recognizer rec(CLOCK_50, go, combos, winner);
+	sequence_recognizer rec(CLOCK_50, go, combos, winner);
 	
 	
 	

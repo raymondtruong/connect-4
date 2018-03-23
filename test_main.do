@@ -181,3 +181,6 @@ run 10ns
 force {KEY[0]} 0
 run 10ns
 
+force {KEY[0]} 1
+
+run 5000ns
