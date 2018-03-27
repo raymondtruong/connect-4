@@ -60,8 +60,8 @@ module main_w_vga(CLOCK_50, PS2_DAT, PS2_CLK, KEY, LEDR,
 	/////////////////////////////////////////////////////////////////////////////
     wire [2:0] player_color;
     assign player_color = turn == 2'b01 ? 3'b100 : 3'b001;
-    reg  [9:0] cell_x;
-	reg  [9:0] cell_y;
+    reg  [6:0] cell_x;
+	reg  [6:0] cell_y;
 
 
     // Declare your inputs and outputs here
@@ -459,19 +459,47 @@ module main_w_vga(CLOCK_50, PS2_DAT, PS2_CLK, KEY, LEDR,
 		endcase
 		
 		if (column == 5'd0)
+        begin
 			column_0_count <= column_0_count + 1;
+            cell_x <= 6'b0000000;
+            cell_y <= 6'b0000000;
+            end
 		else if (column == 5'd1)
+        begin
 			column_1_count <= column_1_count + 1;
+            cell_x <= 6'b0000100;
+            cell_y <= 6'b0000100;
+            end
 		else if (column == 5'd2)
+        begin
 			column_2_count <= column_2_count + 1;
+            cell_x <= 6'b0010000;
+            cell_y <= 6'b0010000;
+            end
 		else if (column == 5'd3)
+        begin
 			column_3_count <= column_3_count + 1;
+            cell_x <= 6'b1000000;
+            cell_y <= 6'b1000000;
+            end
 		else if (column == 5'd4)
+        begin
 			column_4_count <= column_4_count + 1;
+            cell_x <= 6'b1000100;
+            cell_y <= 6'b1000100;
+            end
 		else if (column == 5'd5)
+        begin
 			column_5_count <= column_5_count + 1;
+            cell_x <= 6'b1010000;
+            cell_y <= 6'b1010000;
+            end
 		else if (column == 5'd6)
+        begin
 			column_6_count <= column_6_count + 1;
+            cell_x <= 6'b1100000;
+            cell_y <= 6'b1100000;
+            end
 	end
 	
 	
