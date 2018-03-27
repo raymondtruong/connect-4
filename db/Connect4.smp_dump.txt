@@ -1,0 +1,19 @@
+
+State Machine - |main|sequence_recognizer:rec|current_state
+Name current_state.YELLOW_3 current_state.YELLOW_2 current_state.YELLOW_1 current_state.RED_WIN current_state.RED_3 current_state.RED_2 current_state.RED_1 current_state.INITIAL current_state.YELLOW_WIN 
+current_state.INITIAL 0 0 0 0 0 0 0 0 0 
+current_state.RED_1 0 0 0 0 0 0 1 1 0 
+current_state.RED_2 0 0 0 0 0 1 0 1 0 
+current_state.RED_3 0 0 0 0 1 0 0 1 0 
+current_state.RED_WIN 0 0 0 1 0 0 0 1 0 
+current_state.YELLOW_1 0 0 1 0 0 0 0 1 0 
+current_state.YELLOW_2 0 1 0 0 0 0 0 1 0 
+current_state.YELLOW_3 1 0 0 0 0 0 0 1 0 
+current_state.YELLOW_WIN 0 0 0 0 0 0 0 1 1 
+
+State Machine - |main|keyboard_press_driver:keyboard|count
+Name count.11 count.10 count.01 count.00 
+count.00 0 0 0 0 
+count.01 0 0 1 1 
+count.10 0 1 0 1 
+count.11 1 0 0 1 

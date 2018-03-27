@@ -5,7 +5,7 @@ module turn_tracker(enable, reset, q);
 	input enable, reset; 
 	output reg [1:0] q = 2'b01;
 
-	always @(posedge enable)
+	always @(posedge enable or posedge reset)
 	begin
 		if (reset)
 			q <= 2'b01;

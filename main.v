@@ -1,20 +1,57 @@
-module main(CLOCK_50, SW, KEY, LEDR);
+module main(CLOCK_50, PS2_DAT, PS2_CLK, KEY, LEDR);
 	
 	/////////////////////////////////////////////////////////////////////////////
 	//                               Declarations                              //
 	/////////////////////////////////////////////////////////////////////////////
 
 	input CLOCK_50;
-	input [9:0] SW;			// replace with keyboard eventually
+	input PS2_DAT, PS2_CLK;
 	input [3:0] KEY;
-	output [9:0] LEDR;		// replace with monitor eventually
+	output [9:0] LEDR;	
 	
-	wire go = ~KEY[0];
 	wire reset = ~KEY[3];
+	
+	
+	
+	
+	
+	/////////////////////////////////////////////////////////////////////////////
+	//                                  I/O                                    //
+	/////////////////////////////////////////////////////////////////////////////
+	
+	
+	// Credit: https://class.ee.washington.edu/271/hauck2/de1/keyboard/PS2Keyboard.pdf
+	//         https://class.ee.washington.edu/271/hauck2/de1/keyboard/KeyboardFiles.zip
+	wire valid, makeBreak;
+	wire [7:0] outCode;
+	keyboard_press_driver keyboard(CLOCK_50, valid, makeBreak, outCode, PS2_DAT, PS2_CLK, reset);
+	
+	// Keyboard scan codes (set 2)
+	localparam KEY_Z = 8'h1A,
+				  KEY_X = 8'h22,
+				  KEY_C = 8'h21,
+				  KEY_V = 8'h2A,
+				  KEY_B = 8'h32,
+				  KEY_N = 8'h31,
+				  KEY_M = 8'h3A;
+				  
+	wire go = valid && makeBreak;
+
 	
 	// Keep track of whose turn it is (and also which piece to insert)
 	wire [1:0] turn;
 	turn_tracker tt(go, reset, turn);
+	
+	assign LEDR[9] = turn == 2'b01 ? 1'b1 : 1'b0;
+	assign LEDR[0] = turn == 2'b10 ? 1'b1 : 1'b0;
+
+	
+	
+	
+	
+	/////////////////////////////////////////////////////////////////////////////
+	//                             Memory Model                                //
+	/////////////////////////////////////////////////////////////////////////////
 	
 	// One two-bit register for every cell on the board
 	reg [5:0] cell_number;
@@ -34,7 +71,7 @@ module main(CLOCK_50, SW, KEY, LEDR);
 	end
 	reg [97:0] board; 
 	
-	reg [397:0] combos;
+	reg [397:0] combos;	
 	reg [13:0] column_0, column_1, column_2, column_3, column_4, column_5, column_6,
 				  row_0, row_1, row_2, row_3, row_4, row_5, row_6, diagonal_0, diagonal_1;
 				  
@@ -52,57 +89,148 @@ module main(CLOCK_50, SW, KEY, LEDR);
 	
 	
 	
+	
+	
+	
+	
 	/////////////////////////////////////////////////////////////////////////////
-	//                               Insertion                                 //
+	//                               Game state                                //
 	/////////////////////////////////////////////////////////////////////////////
 	
 	always @(*)
 	begin
-		// Determine which column to insert into
-		if (SW[6])
-		begin
-			column <= 5'd0;
-			column_count <= column_0_count;
-		end
-		else if (SW[5])	
-		begin
-			column <= 5'd1;
-			column_count <= column_1_count;
-		end
-		else if (SW[4])
-		begin
-			column <= 5'd2;
-			column_count <= column_2_count;
-		end
-		else if (SW[3])
-		begin
-			column <= 5'd3;
-			column_count <= column_3_count;
-		end
-		else if (SW[2])
-		begin	
-			column <= 5'd4;
-			column_count <= column_4_count;
-		end
-		else if (SW[1])
-		begin
-			column <= 5'd5;
-			column_count <= column_5_count;
-		end
-		else if (SW[0])
-		begin
-			column <= 5'd6;
-			column_count <= column_6_count;
-		end
-		else
-		begin
-			column <= 5'd6;
-			column_count <= column_6_count;
-		end
 		
-		// Determine what cell to go into
+		// Determine which column to insert into
+		case (outCode)
+			KEY_Z: begin
+					 column <= 5'd0;
+					 column_count <= column_0_count;
+					 end
+			KEY_X: begin
+					 column <= 5'd1;
+					 column_count <= column_1_count;
+					 end
+			KEY_C: begin
+					 column <= 5'd2;
+					 column_count <= column_2_count;
+					 end
+			KEY_V: begin
+					 column <= 5'd3;
+					 column_count <= column_3_count;
+					 end
+			KEY_B: begin
+			       column <= 5'd4;
+					 column_count <= column_4_count;
+					 end
+			KEY_N: begin
+			       column <= 5'd5;
+					 column_count <= column_5_count;
+					 end
+			KEY_M: begin
+			       column <= 5'd6;
+					 column_count <= column_6_count;
+					 end
+		endcase
+		
+		// Determine what cell to insert into
 		cell_number <= column + (5'd7 * (5'd6 - column_count)); 
+		
+		
+		// Assemble board
+		board <= {c_0, c_1, c_2, c_3, c_4, c_5, c_6, c_7, c_8, c_9, 
+				 c_10, c_11, c_12, c_13, c_14, c_15, c_16, c_17, c_18, c_19,
+				 c_20, c_21, c_22, c_23, c_24, c_25, c_26, c_27, c_28, c_29,
+				 c_30, c_31, c_32, c_33, c_34, c_35, c_36, c_37, c_38, c_39,
+				 c_40, c_41, c_42, c_43, c_44, c_45, c_46, c_47, c_48};	
+		
+		// Assemble winning combinations
+		row_0 <= board[13:0];
+		row_1 <= board[27:14];
+		row_2 <= board[41:28];
+		row_3 <= board[55:42];
+		row_4 <= board[69:56];
+		row_5 <= board[83:70];
+		row_6 <= board[97:84]; 
+		column_0 <= {board[0], board[1], 
+									board[14], board[15],
+									board[28], board[29],
+									board[42], board[43], 
+									board[56], board[57],
+									board[70], board[71],
+									board[84], board[85]};
+		column_1 <= {board[2], board[3], 
+									board[16], board[17],
+									board[30], board[31],
+									board[44], board[45], 
+									board[58], board[59],
+									board[72], board[73],
+									board[86], board[87]};
+		column_2 <= {board[4], board[5], 
+									board[18], board[19],
+									board[32], board[33],
+									board[46], board[47], 
+									board[60], board[61],
+									board[74], board[75],
+									board[88], board[89]};
+		column_3 <= {board[6], board[7], 
+									board[20], board[21],
+									board[34], board[35],
+									board[48], board[49], 
+									board[62], board[63],
+									board[76], board[77],
+									board[90], board[91]};
+		column_4 <= {board[8], board[9], 
+									board[22], board[23],
+									board[36], board[37],
+									board[50], board[51], 
+									board[64], board[65],
+									board[78], board[79],
+									board[92], board[93]};
+		column_5 <= {board[10], board[11], 
+									board[24], board[25],
+									board[38], board[39],
+									board[52], board[53], 
+									board[66], board[67],
+									board[80], board[81],
+									board[94], board[95]};
+		column_6 <= {board[12], board[13], 
+									board[26], board[27],
+									board[40], board[41],
+									board[54], board[55], 
+									board[68], board[69],
+									board[82], board[83],
+									board[96], board[97]};
+		diagonal_0 <= {board[6], board[7], board[22], board[23], board[38], board[39], board[54], board[55], 2'b00,
+								 board[4], board[5], board[20], board[21], board[36], board[37], board[52], board[53], board[68], board[69], 2'b00,
+								 board[2], board[3], board[18], board[19], board[34], board[35], board[50], board[51], board[66], board[67], board[82], board[83], 2'b00,
+								 board[0], board[1], board[16], board[17], board[32], board[33], board[48], board[49], board[64], board[65], board[80], board[81], board[96], board[97], 2'b00,
+								 board[14], board[15], board[30], board[31], board[46], board[47], board[62], board[63], board[78], board[79], board[94], board[95], 2'b00,
+								 board[28], board[29], board[44], board[45], board[60], board[61], board[76], board[77], board[92], board[93], 2'b00,
+								 board[42], board[43], board[58], board[59], board[74], board[75], board[90], board[91]};
+		diagonal_1 <= {board[42], board[43], board[30], board[31], board[18], board[19], board[6], board[7], 2'b00,
+								 board[56], board[57], board[44], board[45], board[32], board[33], board[20], board[21], board[8], board[9], 2'b00,
+								 board[70], board[71], board[58], board[59], board[46], board[47], board[34], board[35], board[22], board[23], board[10], board[11], 2'b00,
+								 board[84], board[85], board[72], board[73], board[60], board[61], board[48], board[49], board[36], board[37], board[24], board[25], board[12], board[13], 2'b00,
+								 board[86], board[87], board[74], board[75], board[62], board[63], board[50], board[51], board[38], board[39], board[26], board[27], 2'b00,
+								 board[88], board[89], board[76], board[77], board[64], board[65], board[52], board[53], board[40], board[41], 2'b00,
+								 board[90], board[91], board[78], board[79], board[66], board[67], board[54], board[55]};
+		combos <= {row_0, 2'b00, row_1, 2'b00, row_2, 2'b00, row_3, 2'b00, row_4, 2'b00, row_5, 2'b00, row_6, 2'b00,
+								column_0, 2'b00, column_1, 2'b00, column_2, 2'b00, column_3, 2'b00, column_4, 2'b00, column_5, 2'b00, column_6,	2'b00, 
+								diagonal_0, 2'b00, diagonal_1};
+	end
+	
 
+	
+	
+	
+	
+	/////////////////////////////////////////////////////////////////////////////
+	//                              Insertion                                  //
+	/////////////////////////////////////////////////////////////////////////////
+
+	always @(posedge go)
+	begin
+	
 		// Write to the cell if nothing's there
 		case (cell_number)
 			6'd0: begin
@@ -254,95 +382,6 @@ module main(CLOCK_50, SW, KEY, LEDR);
 					end
 		endcase
 		
-		// Assemble board
-		board <= {c_0, c_1, c_2, c_3, c_4, c_5, c_6, c_7, c_8, c_9, 
-				 c_10, c_11, c_12, c_13, c_14, c_15, c_16, c_17, c_18, c_19,
-				 c_20, c_21, c_22, c_23, c_24, c_25, c_26, c_27, c_28, c_29,
-				 c_30, c_31, c_32, c_33, c_34, c_35, c_36, c_37, c_38, c_39,
-				 c_40, c_41, c_42, c_43, c_44, c_45, c_46, c_47, c_48};	
-		
-		
-		// Assemble winning combinations
-		row_0 <= board[13:0];
-		row_1 <= board[27:14];
-		row_2 <= board[41:28];
-		row_3 <= board[55:42];
-		row_4 <= board[69:56];
-		row_5 <= board[83:70];
-		row_6 <= board[97:84]; 
-		column_0 <= {board[0], board[1], 
-									board[14], board[15],
-									board[28], board[29],
-									board[42], board[43], 
-									board[56], board[57],
-									board[70], board[71],
-									board[84], board[85]};
-		column_1 <= {board[2], board[3], 
-									board[16], board[17],
-									board[30], board[31],
-									board[44], board[45], 
-									board[58], board[59],
-									board[72], board[73],
-									board[86], board[87]};
-		column_2 <= {board[4], board[5], 
-									board[18], board[19],
-									board[32], board[33],
-									board[46], board[47], 
-									board[60], board[61],
-									board[74], board[75],
-									board[88], board[89]};
-		column_3 <= {board[6], board[7], 
-									board[20], board[21],
-									board[34], board[35],
-									board[48], board[49], 
-									board[62], board[63],
-									board[76], board[77],
-									board[90], board[91]};
-		column_4 <= {board[8], board[9], 
-									board[22], board[23],
-									board[36], board[37],
-									board[50], board[51], 
-									board[64], board[65],
-									board[78], board[79],
-									board[92], board[93]};
-		column_5 <= {board[10], board[11], 
-									board[24], board[25],
-									board[38], board[39],
-									board[52], board[53], 
-									board[66], board[67],
-									board[80], board[81],
-									board[94], board[95]};
-		column_6 <= {board[12], board[13], 
-									board[26], board[27],
-									board[40], board[41],
-									board[54], board[55], 
-									board[68], board[69],
-									board[82], board[83],
-									board[96], board[97]};
-		diagonal_0 <= {board[6], board[7], board[22], board[23], board[38], board[39], board[54], board[55], 2'b00,
-								 board[4], board[5], board[20], board[21], board[36], board[37], board[52], board[53], board[68], board[69], 2'b00,
-								 board[2], board[3], board[18], board[19], board[34], board[35], board[50], board[51], board[66], board[67], board[82], board[83], 2'b00,
-								 board[0], board[1], board[16], board[17], board[32], board[33], board[48], board[49], board[64], board[65], board[80], board[81], board[96], board[97], 2'b00,
-								 board[14], board[15], board[30], board[31], board[46], board[47], board[62], board[63], board[78], board[79], board[94], board[95], 2'b00,
-								 board[28], board[29], board[44], board[45], board[60], board[61], board[76], board[77], board[92], board[93], 2'b00,
-								 board[42], board[43], board[58], board[59], board[74], board[75], board[90], board[91]};
-		diagonal_1 <= {board[42], board[43], board[30], board[31], board[18], board[19], board[6], board[7], 2'b00,
-								 board[56], board[57], board[44], board[45], board[32], board[33], board[20], board[21], board[8], board[9], 2'b00,
-								 board[70], board[71], board[58], board[59], board[46], board[47], board[34], board[35], board[22], board[23], board[10], board[11], 2'b00,
-								 board[84], board[85], board[72], board[73], board[60], board[61], board[48], board[49], board[36], board[37], board[24], board[25], board[12], board[13], 2'b00,
-								 board[86], board[87], board[74], board[75], board[62], board[63], board[50], board[51], board[38], board[39], board[26], board[27], 2'b00,
-								 board[88], board[89], board[76], board[77], board[64], board[65], board[52], board[53], board[40], board[41], 2'b00,
-								 board[90], board[91], board[78], board[79], board[66], board[67], board[54], board[55]};
-		
-		combos <= {row_0, 2'b00, row_1, 2'b00, row_2, 2'b00, row_3, 2'b00, row_4, 2'b00, row_5, 2'b00, row_6, 2'b00,
-								column_0, 2'b00, column_1, 2'b00, column_2, 2'b00, column_3, 2'b00, column_4, 2'b00, column_5, 2'b00, column_6,	2'b00, 
-								diagonal_0, 2'b00, diagonal_1};
-	end
-	
-
-	// Insert into column when the button is actually pressed
-	always @(posedge go)
-	begin
 		if (column == 5'd0)
 			column_0_count <= column_0_count + 1;
 		else if (column == 5'd1)
@@ -358,6 +397,11 @@ module main(CLOCK_50, SW, KEY, LEDR);
 		else if (column == 5'd6)
 			column_6_count <= column_6_count + 1;
 	end
+	
+	
+	
+	
+	
 	
 	
 	
