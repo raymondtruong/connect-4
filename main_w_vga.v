@@ -60,7 +60,7 @@ module main_w_vga(CLOCK_50, PS2_DAT, PS2_CLK, KEY, LEDR,
 	/////////////////////////////////////////////////////////////////////////////
     wire [2:0] player_color;
     assign player_color = turn == 2'b01 ? 3'b100 : 3'b001;
-    reg  [6:0] cell_x;
+    reg  [7:0] cell_x;
 	reg  [6:0] cell_y;
 
 
@@ -81,7 +81,7 @@ module main_w_vga(CLOCK_50, PS2_DAT, PS2_CLK, KEY, LEDR,
 	wire [7:0] x;
 	wire [6:0] y;
 	wire writeEn;
-	wire enable,ld_coordinates,ld_c;
+	wire ld_coordinates;
 
 	// Create an Instance of a VGA controller - there can be only one!
 	// Define the number of colours as well as the initial background
@@ -104,8 +104,6 @@ module main_w_vga(CLOCK_50, PS2_DAT, PS2_CLK, KEY, LEDR,
 			.VGA_CLK(VGA_CLK));
 		defparam VGA.RESOLUTION = "160x120";
 		defparam VGA.MONOCHROME = "FALSE";
-		
-		
 		defparam VGA.BITS_PER_COLOUR_CHANNEL = 1;
 		defparam VGA.BACKGROUND_IMAGE = "black.mif";
 			
@@ -114,11 +112,11 @@ module main_w_vga(CLOCK_50, PS2_DAT, PS2_CLK, KEY, LEDR,
     
     // Instansiate datapath
 	// datapath d0(...);
-      datapath d0(cell_x, cell_y, player_color,CLOCK_50,reset,enable,ld_coordinates,ld_c,x,y,colour);
+      datapath d0(cell_x, cell_y, player_color,CLOCK_50,reset,writeEn,ld_coordinates,x,y,colour);
 
     // Instansiate FSM control
     // control c0(...);
-	   control c0(go,reset,CLOCK_50,enable,ld_coordinates,ld_c,writeEn);
+	   control c0(go,reset,CLOCK_50,ld_coordinates,writeEn);
 
     
 	
@@ -520,68 +518,58 @@ module main_w_vga(CLOCK_50, PS2_DAT, PS2_CLK, KEY, LEDR,
 	
 endmodule
 
-module datapath(in_x, in_y, colour, clock, reset_n, enable, ld_coordinates, ld_c, X, Y, Colour);
-	input 			reset_n, enable, clock, ld_coordinates, ld_c;
-	input 	[6:0] 	in_x, in_y;
-	input 	[2:0] 	colour;
-	output 	[6:0] 	X;
-	output 	[6:0] 	Y;
-	output 	[2:0]	Colour;
-	reg 	[6:0] 	x1,y1,co1;
+module datapath(in_x, in_y, in_colour, clock, reset_n, plot,ld_coordinates, Xout, Yout, ColourOut);
+	input 			reset_n, plot,clock, ld_coordinates;
+	input 	[7:0] 	in_x;
+	input 	[6:0]	in_y;
+	input 	[2:0] 	in_colour;
+	output 	[7:0] 	Xout;
+	output 	[6:0] 	Yout;
+	output 	[2:0]	ColourOut;
+	reg 	[7:0] 	x1,y1;
+	reg		[2:0]	co1;
 	
 	wire [1:0] c1, c2, c3;
+
+	assign ColourOut = in_colour;
 	
 	always @ (posedge clock) begin
-        if (reset_n) begin
+        if (reset_n == 1'b1) begin
             x1 <= 8'b0; 
             y1 <= 7'b0;
-			co1 <= 3'b0;
         end
         else begin
-            if (ld_coordinates)
-                x1 <= {1'b0, in_x};
+            if (ld_coordinates == 1'b1)
+                x1 <= in_x;
                 y1 <= in_y;
-		    if (ld_c)
-					 co1 <= colour;
         end
     end
-	counter m1(clock, reset_n, enable, c1);
-	rate_counter m2(clock, reset_n, enable, c2);
+	enabledCounter m1(clock, reset_n,plot, c1);
+	rate_counter m2(clock, reset_n,plot, c2);
 	assign enable_1 = (c2 ==  2'b00) ? 1 : 0;
-	counter m3(clock,reset_n,enable_1,c3);
-	assign X = x1 + c1;
-	assign Y = y1 + c3;
-	assign Colour = co1;
+	enabledCounter m3(clock,reset_n,enable_1,c3);
+	assign Xout = x1 + c1;
+	assign Yout = y1 + c3;
 endmodule
 
 
 
-module control(go,reset_n,KEY,clock,enable,ld_coordinates, ld_c,plot);
-		input go,reset_n,clock,KEY;
+module control(go,reset_n,clock,ld_coordinates,plot);
+		input go,reset_n,clock;
 		
-		output reg enable,ld_coordinates,ld_c,plot;
+		output reg ld_coordinates,plot;
 		
-		reg [3:0] current_state, next_state;
-		reg c = 1'b0;
-		
-		wire [4:0] q;
-		wire clock_1;
+		reg current_state, next_state;
 
-
-        localparam  S_START       = 4'd0,
-                S_LOAD_COLOR    = 4'd1,
-                S_DRAW   = 4'd2;          
-					 
-		rate_counter1 m1(clock,reset_n,1'b1,q);
-		assign clock_1 = (q==  5'b00000) ? 1 : 0;
+        localparam  S_START       = 2'b0,
+                S_DRAW   = 2'b1;          
 					 
 		
 		
 		always@(*)
       begin: state_table 
             case (current_state)
-                S_START: next_state = go ? S_LOAD_COLOR : S_START;
-                S_LOAD_COLOR: next_state = S_DRAW;
+                S_START: next_state = go ? S_DRAW : S_START;
                 S_DRAW: next_state = go ? S_DRAW : S_START; 
             default:     next_state = S_START;
         endcase
@@ -594,26 +582,20 @@ module control(go,reset_n,KEY,clock,enable,ld_coordinates, ld_c,plot);
       begin: enable_signals
         // By default make all our signals 0
         ld_coordinates = 1'b0;
-        ld_c = 1'b0;
-		  enable = 1'b0;
 		  plot = 1'b0;
 		  
 		  case(current_state)
 				S_DRAW:begin
 					ld_coordinates = 1'b1;
-					enable = 1'b1;
 					plot = 1'b1;
-					end
-                S_LOAD_COLOR:begin
-					ld_c = 1'b1;
 					end
 		  endcase
 		end
 		
 		
-		always@(posedge clock_1)
+		always@(posedge clock)
       begin: state_FFs
-        if(!reset_n)
+        if(reset_n)
             current_state <= S_START;
         else
             current_state <= next_state;
@@ -621,17 +603,16 @@ module control(go,reset_n,KEY,clock,enable,ld_coordinates, ld_c,plot);
 endmodule
 
 
-module rate_counter(clock, reset_n, enable, q);
+module rate_counter(clock, reset_n,enable, q);
 		input clock;
 		input reset_n;
-		input enable;
 		output reg [1:0] q;
 		
 		always @(posedge clock)
 		begin
 			if(reset_n == 1'b0)
 				q <= 2'b11;
-			else if(enable ==1'b1)
+			else if(enable == 1'b1)
 			begin
 			   if ( q == 2'b00 )
 					q <= 2'b11;
@@ -662,14 +643,32 @@ module rate_counter1(clock,reset_n,enable,q);
 endmodule	
 
 
-module counter(clock, reset_n, enable, q);
+module counter(clock, reset_n, q);
+	input 				clock, reset_n;
+	output reg 	[1:0] 	q;
+	
+	always @(posedge clock) begin
+		if(reset_n == 1'b0)
+			q <= 2'b00;
+		else 
+		begin
+		  if (q == 2'b11)
+			  q <= 2'b00;
+		  else
+			  q <= q + 1'b1;
+		end
+   end
+endmodule
+
+
+module enabledCounter(clock, reset_n,enable, q);
 	input 				clock, reset_n, enable;
 	output reg 	[1:0] 	q;
 	
 	always @(posedge clock) begin
 		if(reset_n == 1'b0)
 			q <= 2'b00;
-		else if (enable == 1'b1)
+		else if(enable == 1'b1)
 		begin
 		  if (q == 2'b11)
 			  q <= 2'b00;
