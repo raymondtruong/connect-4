@@ -1,4 +1,4 @@
-module main_w_vga(CLOCK_50, PS2_DAT, PS2_CLK, KEY, LEDR,
+module main(CLOCK_50, SW, KEY, LEDR,
 // The ports below are for the VGA output.  Do not change.
 		VGA_CLK,   						//	VGA Clock
 		VGA_HS,							//	VGA H_SYNC
@@ -15,11 +15,15 @@ module main_w_vga(CLOCK_50, PS2_DAT, PS2_CLK, KEY, LEDR,
 	/////////////////////////////////////////////////////////////////////////////
 
 	input CLOCK_50;
-	input PS2_DAT, PS2_CLK;
+	//input PS2_DAT, PS2_CLK;
 	input [3:0] KEY;
 	output [9:0] LEDR;	
 	
 	wire reset = ~KEY[3];
+	input [9:0] SW;			// replace with keyboard eventually
+	
+	wire go = ~KEY[0];
+	
 	
 	
 	
@@ -32,11 +36,31 @@ module main_w_vga(CLOCK_50, PS2_DAT, PS2_CLK, KEY, LEDR,
 	
 	// Credit: https://class.ee.washington.edu/271/hauck2/de1/keyboard/PS2Keyboard.pdf
 	//         https://class.ee.washington.edu/271/hauck2/de1/keyboard/KeyboardFiles.zip
-	wire valid, makeBreak;
-	wire [7:0] outCode;
-	keyboard_press_driver keyboard(CLOCK_50, valid, makeBreak, outCode, PS2_DAT, PS2_CLK, reset);
+	//wire valid, makeBreak;
+	//wire [7:0] outCode;
+	//keyboard_press_driver keyboard(CLOCK_50, valid, makeBreak, outCode, PS2_DAT, PS2_CLK, reset);
 	
 	// Keyboard scan codes (set 2)
+	/*localparam KEY_Z = 8'h1A,
+				  KEY_X = 8'h22,
+				  KEY_C = 8'h21,
+				  KEY_V = 8'h2A,
+				  KEY_B = 8'h32,
+				  KEY_N = 8'h31,
+				  KEY_M = 8'h3A;
+				  */
+				  
+	// Keyboard scan codes (set 1)
+	/*localparam KEY_Z = 8'h2C,
+				  KEY_X = 8'h2D,
+				  KEY_C = 8'h2E,
+				  KEY_V = 8'h2F,
+				  KEY_B = 8'h30,
+				  KEY_N = 8'h31,
+				  KEY_M = 8'h32;
+				  
+				  
+	// Keyboard scan codes (set 3)
 	localparam KEY_Z = 8'h1A,
 				  KEY_X = 8'h22,
 				  KEY_C = 8'h21,
@@ -44,8 +68,10 @@ module main_w_vga(CLOCK_50, PS2_DAT, PS2_CLK, KEY, LEDR,
 				  KEY_B = 8'h32,
 				  KEY_N = 8'h31,
 				  KEY_M = 8'h3A;
+				  */
 				  
-	wire go = valid && makeBreak;
+				  
+	//wire go = valid && makeBreak;
 
 	
 	// Keep track of whose turn it is (and also which piece to insert)
@@ -54,19 +80,35 @@ module main_w_vga(CLOCK_50, PS2_DAT, PS2_CLK, KEY, LEDR,
 	
 	assign LEDR[9] = turn == 2'b01 ? 1'b1 : 1'b0;
 	assign LEDR[0] = turn == 2'b10 ? 1'b1 : 1'b0;
+	//For testing
+	assign LEDR[5] = |board;
+	assign LEDR[4] = go;
+	assign LEDR[8] = |winner;
+	assign LEDR[1] = writeEn;
 
-  	/////////////////////////////////////////////////////////////////////////////
+
+	/////////////////////////////////////////////////////////////////////////////
 	//                                  NEW FOR VGA                            //
 	/////////////////////////////////////////////////////////////////////////////
     wire [2:0] player_color;
     assign player_color = turn == 2'b01 ? 3'b100 : 3'b001;
-    reg  [7:0] cell_x;
-	reg  [6:0] cell_y;
+	reg [7:0] cell_x;
+	reg [6:0] cell_y;
+    //wire  [7:0] cell_x;
+	//wire  [6:0] cell_y;
+	//
+	//assign cell_x = cell_number << 2;
+	//assign cell_y = cell_number << 2;
 
+	//NOTE: This draws a small pixel in the top left due to the vga loading in the default values of x & y
 
-    // Declare your inputs and outputs here
+	// Declare your inputs and outputs here
+	wire resetn;
+	assign resetn = KEY[2];
+	wire erase_en, render_en, update_en, bounce_x, bounce_y;
+	
 	// Do not change the following outputs
-	output			VGA_CLK;   				//	VGA Clock      
+	output			VGA_CLK;   				//	VGA Clock
 	output			VGA_HS;					//	VGA H_SYNC
 	output			VGA_VS;					//	VGA V_SYNC
 	output			VGA_BLANK_N;				//	VGA BLANK
@@ -75,21 +117,19 @@ module main_w_vga(CLOCK_50, PS2_DAT, PS2_CLK, KEY, LEDR,
 	output	[9:0]	VGA_G;	 				//	VGA Green[9:0]
 	output	[9:0]	VGA_B;   				//	VGA Blue[9:0]
 	
-	
 	// Create the colour, x, y and writeEn wires that are inputs to the controller.
-	wire [2:0] colour;
+	//wire [2:0] colour = SW[9:7];
 	wire [7:0] x;
 	wire [6:0] y;
 	wire writeEn;
-	wire ld_coordinates;
 
 	// Create an Instance of a VGA controller - there can be only one!
 	// Define the number of colours as well as the initial background
 	// image file (.MIF) for the controller.
 	vga_adapter VGA(
-			.resetn(RESET_N),
+			.resetn(resetn),
 			.clock(CLOCK_50),
-			.colour(colour),
+			.colour(player_color),
 			.x(x),
 			.y(y),
 			.plot(writeEn),
@@ -110,16 +150,28 @@ module main_w_vga(CLOCK_50, PS2_DAT, PS2_CLK, KEY, LEDR,
 	// Put your code here. Your code should produce signals x,y,colour and writeEn/plot
 	// for the VGA controller, in addition to any other functionality your design may require.
     
-    // Instansiate datapath
-	// datapath d0(...);
-      datapath d0(cell_x, cell_y, player_color,CLOCK_50,reset,writeEn,ld_coordinates,x,y,colour);
+// Instansiate datapath
+datapath d0(
+	.clk(CLOCK_50), 
+	.resetn(KEY[2]),
+	.writeEnable(writeEn),
+	.color(player_color),
+	.inX(cell_x),
+	.inY(cell_y),
+	.color_out(colour),
+	.x(x),
+	.y(y)
+);
 
-    // Instansiate FSM control
-    // control c0(...);
-	   control c0(go,reset,CLOCK_50,ld_coordinates,writeEn);
+// Instansiate FSM control
+control c0(
+	.clk(CLOCK_50),
+	.resetn(KEY[2]),
+	.go(go),
+	.writeEnable(writeEn)	
+);
 
     
-	
 	
 	
 	
@@ -171,7 +223,7 @@ module main_w_vga(CLOCK_50, PS2_DAT, PS2_CLK, KEY, LEDR,
 	//                               Game state                                //
 	/////////////////////////////////////////////////////////////////////////////
 	
-	always @(*)
+	/*always @(*)
 	begin
 		
 		// Determine which column to insert into
@@ -205,7 +257,50 @@ module main_w_vga(CLOCK_50, PS2_DAT, PS2_CLK, KEY, LEDR,
 					 column_count <= column_6_count;
 					 end
 		endcase
-		
+		*/
+		always @(*)
+	begin
+		// Determine which column to insert into
+		if (SW[6])
+		begin
+			column <= 5'd0;
+			column_count <= column_0_count;
+		end
+		else if (SW[5])	
+		begin
+			column <= 5'd1;
+			column_count <= column_1_count;
+		end
+		else if (SW[4])
+		begin
+			column <= 5'd2;
+			column_count <= column_2_count;
+		end
+		else if (SW[3])
+		begin
+			column <= 5'd3;
+			column_count <= column_3_count;
+		end
+		else if (SW[2])
+		begin	
+			column <= 5'd4;
+			column_count <= column_4_count;
+		end
+		else if (SW[1])
+		begin
+			column <= 5'd5;
+			column_count <= column_5_count;
+		end
+		else if (SW[0])
+		begin
+			column <= 5'd6;
+			column_count <= column_6_count;
+		end
+		else
+		begin
+			column <= 5'd6;
+			column_count <= column_6_count;
+		end
 		// Determine what cell to insert into
 		cell_number <= column + (5'd7 * (5'd6 - column_count)); 
 		
@@ -308,16 +403,36 @@ module main_w_vga(CLOCK_50, PS2_DAT, PS2_CLK, KEY, LEDR,
 		// Write to the cell if nothing's there
 		case (cell_number)
 			6'd0: begin
-					if (c_0 == 2'b00) c_0 <= turn;
+					if (c_0 == 2'b00) 
+						begin
+							c_0 <= turn;
+							cell_x <= 8'd8;
+							cell_y <= 7'd5;
+						end
 					end
 			6'd1: begin
-					if (c_1 == 2'b00) c_1 <= turn;
+					if (c_1 == 2'b00)
+						begin
+							c_1 <= turn;
+							cell_x <= 8'd30;
+							cell_y <= 7'd5;
+						end
 					end
 			6'd2: begin
-					if (c_2 == 2'b00) c_2 <= turn;
+					if (c_2 == 2'b00)
+						begin
+							c_2 <= turn;
+							cell_x <= 8'd52;
+							cell_y <= 7'd5;
+						end
 					end
 			6'd3: begin
-					if (c_3 == 2'b00) c_3 <= turn;
+					if (c_3 == 2'b00)
+						begin
+							c_3 <= turn;
+							cell_x <= 8'd74;
+							cell_y <= 7'd5;
+						end
 					end
 			6'd4: begin
 					if (c_4 == 2'b00) c_4 <= turn;
@@ -457,47 +572,19 @@ module main_w_vga(CLOCK_50, PS2_DAT, PS2_CLK, KEY, LEDR,
 		endcase
 		
 		if (column == 5'd0)
-        begin
 			column_0_count <= column_0_count + 1;
-            cell_x <= 6'b0000000;
-            cell_y <= 6'b0000000;
-            end
 		else if (column == 5'd1)
-        begin
 			column_1_count <= column_1_count + 1;
-            cell_x <= 6'b0000100;
-            cell_y <= 6'b0000100;
-            end
 		else if (column == 5'd2)
-        begin
 			column_2_count <= column_2_count + 1;
-            cell_x <= 6'b0010000;
-            cell_y <= 6'b0010000;
-            end
 		else if (column == 5'd3)
-        begin
 			column_3_count <= column_3_count + 1;
-            cell_x <= 6'b1000000;
-            cell_y <= 6'b1000000;
-            end
 		else if (column == 5'd4)
-        begin
 			column_4_count <= column_4_count + 1;
-            cell_x <= 6'b1000100;
-            cell_y <= 6'b1000100;
-            end
 		else if (column == 5'd5)
-        begin
 			column_5_count <= column_5_count + 1;
-            cell_x <= 6'b1010000;
-            cell_y <= 6'b1010000;
-            end
 		else if (column == 5'd6)
-        begin
 			column_6_count <= column_6_count + 1;
-            cell_x <= 6'b1100000;
-            cell_y <= 6'b1100000;
-            end
 	end
 	
 	
@@ -514,146 +601,58 @@ module main_w_vga(CLOCK_50, PS2_DAT, PS2_CLK, KEY, LEDR,
 	wire [1:0] winner;
 	sequence_recognizer rec(CLOCK_50, go, combos, winner);
 	
-	
-	
-endmodule
-
-module datapath(in_x, in_y, in_colour, clock, reset_n, plot,ld_coordinates, Xout, Yout, ColourOut);
-	input 			reset_n, plot,clock, ld_coordinates;
-	input 	[7:0] 	in_x;
-	input 	[6:0]	in_y;
-	input 	[2:0] 	in_colour;
-	output 	[7:0] 	Xout;
-	output 	[6:0] 	Yout;
-	output 	[2:0]	ColourOut;
-	reg 	[7:0] 	x1,y1;
-	reg		[2:0]	co1;
-	
-	wire [1:0] c1, c2, c3;
-
-	assign ColourOut = in_colour;
-	
-	always @ (posedge clock) begin
-        if (reset_n == 1'b1) begin
-            x1 <= 8'b0; 
-            y1 <= 7'b0;
-        end
-        else begin
-            if (ld_coordinates == 1'b1)
-                x1 <= in_x;
-                y1 <= in_y;
-        end
-    end
-	enabledCounter m1(clock, reset_n,plot, c1);
-	rate_counter m2(clock, reset_n,plot, c2);
-	assign enable_1 = (c2 ==  2'b00) ? 1 : 0;
-	enabledCounter m3(clock,reset_n,enable_1,c3);
-	assign Xout = x1 + c1;
-	assign Yout = y1 + c3;
 endmodule
 
 
+module datapath(
+	input clk, resetn,
+	input writeEnable,
+	input [2:0] color,
+	input [7:0] inX,
+	input [6:0] inY,
+	output [2:0] color_out,
+	output [7:0] x,
+	output [6:0] y
+);
 
-module control(go,reset_n,clock,ld_coordinates,plot);
-		input go,reset_n,clock;
-		
-		output reg ld_coordinates,plot;
-		
-		reg current_state, next_state;
+wire [2:0] c1, c2, c3;
+wire enable_Y;
+reg [7:0] tempx, tempy;
 
-        localparam  S_START       = 2'b0,
-                S_DRAW   = 2'b1;          
-					 
-		
-		
-		always@(*)
-      begin: state_table 
-            case (current_state)
-                S_START: next_state = go ? S_DRAW : S_START;
-                S_DRAW: next_state = go ? S_DRAW : S_START; 
-            default:     next_state = S_START;
-        endcase
-      end 
-		
-				
-		  
-		
-		always@(*)
-      begin: enable_signals
-        // By default make all our signals 0
-        ld_coordinates = 1'b0;
-		  plot = 1'b0;
-		  
-		  case(current_state)
-				S_DRAW:begin
-					ld_coordinates = 1'b1;
-					plot = 1'b1;
-					end
-		  endcase
+counter m(clk, resetn,writeEnable, c1);
+ratecounter m1(clk, resetn, writeEnable, c2);
+assign enable_Y = (c2 == 3'b00) ? 1:0;
+counter m2(clk, resetn, enable_Y, c3);
+
+
+assign x = tempx;
+assign y = tempy;
+assign color_out = color;
+always @(posedge clk)
+begin 
+	tempx <= 7'd0;
+	tempy <= 6'd0;
+	if(writeEnable == 1'b1)
+		begin 
+			tempx <= inX + c1;
+			tempy <= inY + c3;
+			
 		end
-		
-		
-		always@(posedge clock)
-      begin: state_FFs
-        if(reset_n)
-            current_state <= S_START;
-        else
-            current_state <= next_state;
-      end 
-endmodule
+end
+endmodule 
 
-
-module rate_counter(clock, reset_n,enable, q);
-		input clock;
-		input reset_n;
-		output reg [1:0] q;
-		
-		always @(posedge clock)
-		begin
-			if(reset_n == 1'b0)
-				q <= 2'b11;
-			else if(enable == 1'b1)
-			begin
-			   if ( q == 2'b00 )
-					q <= 2'b11;
-				else
-					q <= q - 1'b1;
-			end
-		end
-endmodule	
-
-module rate_counter1(clock,reset_n,enable,q);
-		input clock;
-		input reset_n;
-		input enable;
-		output reg [4:0] q;
-		
-		always @(posedge clock)
-		begin
-			if(reset_n == 1'b0)
-				q <= 5'b10000;
-			else if(enable ==1'b1)
-			begin
-			   if ( q == 5'b00000 )
-					q <= 5'b10000;
-				else
-					q <= q - 1'b1;
-			end
-		end
-endmodule	
-
-
-module counter(clock, reset_n, q);
-	input 				clock, reset_n;
-	output reg 	[1:0] 	q;
+module counter(clock, reset_n, enable, q);
+	input 				clock, reset_n, enable;
+	output reg 	[2:0] 	q;
 	
 	always @(posedge clock) begin
 		if(reset_n == 1'b0)
-			q <= 2'b00;
-		else 
+			q <= 3'b000;
+		else if(enable == 1'b1) 
 		begin
-		  if (q == 2'b11)
-			  q <= 2'b00;
+		
+		  if (q == 3'b101)
+			  q <= 3'b000;
 		  else
 			  q <= q + 1'b1;
 		end
@@ -661,19 +660,78 @@ module counter(clock, reset_n, q);
 endmodule
 
 
-module enabledCounter(clock, reset_n,enable, q);
+module ratecounter(clock, reset_n, enable, q);
 	input 				clock, reset_n, enable;
-	output reg 	[1:0] 	q;
+	output reg 	[2:0] 	q;
 	
 	always @(posedge clock) begin
 		if(reset_n == 1'b0)
-			q <= 2'b00;
+			q <= 3'b101;
 		else if(enable == 1'b1)
 		begin
-		  if (q == 2'b11)
-			  q <= 2'b00;
+		
+		  if (q == 3'b000)
+			  q <= 3'b101;
 		  else
-			  q <= q + 1'b1;
+			  q <= q - 1'b1;
 		end
    end
 endmodule
+		
+		
+
+module control(
+	input clk,resetn, go,
+	output reg writeEnable
+);
+
+reg [2:0] current_state, next_state; 
+reg [3:0] count;
+
+assign offset = count;
+
+localparam  S_RESET 		= 2'd0,
+				S_START 		= 2'd1,
+				S_DRAW		= 2'd2;
+				
+
+				
+				
+always @(*)
+begin: state_table 
+		case (current_state)
+			S_RESET: next_state = S_START;
+			S_START: next_state = go ? S_DRAW : S_START;
+			S_DRAW: next_state = go ? S_DRAW : S_RESET;
+					default: next_state = S_RESET;
+
+  endcase
+end // state_table
+				
+
+
+always @(*)
+begin: enable_signals
+  // By default make all our signals 0
+  writeEnable = 1'b0;
+  
+
+  case (current_state)
+		S_DRAW: begin
+			writeEnable = 1'b1; 
+		end 
+  endcase
+end // enable_signals
+
+
+// current_state registers
+always@(posedge clk)
+begin: state_FFs
+  if(!resetn)
+		current_state <= S_RESET;
+  else
+		current_state <= next_state;
+end // state_FFS		
+				
+endmodule 
+
