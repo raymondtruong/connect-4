@@ -435,139 +435,364 @@ control c0(
 						end
 					end
 			6'd4: begin
-					if (c_4 == 2'b00) c_4 <= turn;
+					if (c_4 == 2'b00)
+						begin
+							c_4 <= turn;
+							cell_x <= 8'd96;
+							cell_y <= 7'd5;
+						end
 					end
 			6'd5: begin
-					if (c_5 == 2'b00) c_5 <= turn;
+					if (c_5 == 2'b00)
+						begin
+							c_5 <= turn;
+							cell_x <= 8'd118;
+							cell_y <= 7'd5;
+						end
 					end
 			6'd6: begin
-					if (c_6 == 2'b00) c_6 <= turn;
+					if (c_6 == 2'b00)
+						begin
+							c_6 <= turn;
+							cell_x <= 8'd140;
+							cell_y <= 7'd5;
+						end
 					end
 			6'd7: begin
-					if (c_7 == 2'b00) c_7 <= turn;
+					if (c_7 == 2'b00)
+						begin
+							c_7 <= turn;
+							cell_x <= 8'd8;
+							cell_y <= 7'd21;
+						end
 					end
 			6'd8: begin
-					if (c_8 == 2'b00) c_8 <= turn;
+					if (c_8 == 2'b00)
+						begin
+							c_8 <= turn;
+							cell_x <= 8'd30;
+							cell_y <= 7'd21;
+						end
 					end
 			6'd9: begin
-					if (c_9 == 2'b00) c_9 <= turn;
+					if (c_9 == 2'b00)
+						begin
+							c_9 <= turn;
+							cell_x <= 8'd52;
+							cell_y <= 7'd21;
+						end
 					end
 			6'd10: begin
-					if (c_10 == 2'b00) c_10 <= turn;
+					if (c_10 == 2'b00)
+						begin
+							c_10 <= turn;
+							cell_x <= 8'd74;
+							cell_y <= 7'd21;
+						end
 					end
 			6'd11: begin
-					if (c_11 == 2'b00) c_11 <= turn;
+					if (c_11 == 2'b00)
+						begin
+							c_11 <= turn;
+							cell_x <= 8'd96;
+							cell_y <= 7'd21;
+						end
 					end
 			6'd12: begin
-					if (c_12 == 2'b00) c_12 <= turn;
+					if (c_12 == 2'b00)
+						begin
+							c_12 <= turn;
+							cell_x <= 8'd118;
+							cell_y <= 7'd21;
+						end
 					end
 			6'd13: begin
-					if (c_13 == 2'b00) c_13 <= turn;
+					if (c_13 == 2'b00)
+						begin
+							c_13 <= turn;
+							cell_x <= 8'd140;
+							cell_y <= 7'd21;
+						end
 					end
 			6'd14: begin
-					if (c_14 == 2'b00) c_14 <= turn;
+					if (c_14 == 2'b00)
+						begin
+							c_14 <= turn;
+							cell_x <= 8'd8;
+							cell_y <= 7'd37;
+						end
 					end
 			6'd15: begin
-					if (c_15 == 2'b00) c_15 <= turn;
+					if (c_15 == 2'b00)
+						begin
+							c_15 <= turn;
+							cell_x <= 8'd30;
+							cell_y <= 7'd37;
+						end
 					end
 			6'd16: begin
-					if (c_16 == 2'b00) c_16 <= turn;
+					if (c_16 == 2'b00)
+						begin
+							c_16 <= turn;
+							cell_x <= 8'd52;
+							cell_y <= 7'd37;
+						end
 					end
 			6'd17: begin
-					if (c_17 == 2'b00) c_17 <= turn;
+					if (c_17 == 2'b00)
+						begin
+							c_17 <= turn;
+							cell_x <= 8'd74;
+							cell_y <= 7'd37;
+						end
 					end
 			6'd18: begin
-					if (c_18 == 2'b00) c_18 <= turn;
+					if (c_18 == 2'b00)
+						begin
+							c_18 <= turn;
+							cell_x <= 8'd96;
+							cell_y <= 7'd37;
+						end
 					end
 			6'd19: begin
-					if (c_19 == 2'b00) c_19 <= turn;
+					if (c_19 == 2'b00)
+						begin
+							c_19 <= turn;
+							cell_x <= 8'd118;
+							cell_y <= 7'd37;
+						end
 					end
 			6'd20: begin
-					if (c_20 == 2'b00) c_20 <= turn;
+					if (c_20 == 2'b00)
+						begin
+							c_20 <= turn;
+							cell_x <= 8'd140;
+							cell_y <= 7'd37;
+						end
 					end
 			6'd21: begin
-					if (c_21 == 2'b00) c_21 <= turn;
+					if (c_21 == 2'b00)
+						begin
+							c_21 <= turn;
+							cell_x <= 8'd8;
+							cell_y <= 7'd53;
+						end
 					end
 			6'd22: begin
-					if (c_22 == 2'b00) c_22 <= turn;
+					if (c_22 == 2'b00)
+						begin
+							c_22 <= turn;
+							cell_x <= 8'd30;
+							cell_y <= 7'd53;
+						end
 					end
 			6'd23: begin
-					if (c_23 == 2'b00) c_23 <= turn;
+					if (c_23 == 2'b00)
+						begin
+							c_23 <= turn;
+							cell_x <= 8'd52;
+							cell_y <= 7'd53;
+						end
 					end
 			6'd24: begin
-					if (c_24 == 2'b00) c_24 <= turn;
+					if (c_24 == 2'b00)
+						begin
+							c_24 <= turn;
+							cell_x <= 8'd74;
+							cell_y <= 7'd53;
+						end
 					end
 			6'd25: begin
-					if (c_25 == 2'b00) c_25 <= turn;
+					if (c_25 == 2'b00)
+						begin
+							c_25 <= turn;
+							cell_x <= 8'd96;
+							cell_y <= 7'd53;
+						end
 					end
 			6'd26: begin
-					if (c_26 == 2'b00) c_26 <= turn;
+					if (c_26 == 2'b00)
+						begin
+							c_26 <= turn;
+							cell_x <= 8'd118;
+							cell_y <= 7'd53;
+						end
 					end
 			6'd27: begin
-					if (c_27 == 2'b00) c_27 <= turn;
+					if (c_27 == 2'b00)
+						begin
+							c_27 <= turn;
+							cell_x <= 8'd140;
+							cell_y <= 7'd53;
+						end
 					end
 			6'd28: begin
-					if (c_28 == 2'b00) c_28 <= turn;
+					if (c_28 == 2'b00)
+						begin
+							c_28 <= turn;
+							cell_x <= 8'd8;
+							cell_y <= 7'd69;
+						end
 					end
 			6'd29: begin
-					if (c_29 == 2'b00) c_29 <= turn;
+					if (c_29 == 2'b00)
+						begin
+							c_29 <= turn;
+							cell_x <= 8'd30;
+							cell_y <= 7'd69;
+						end
 					end
 			6'd30: begin
-					if (c_30 == 2'b00) c_30 <= turn;
+					if (c_30 == 2'b00)
+						begin
+							c_30 <= turn;
+							cell_x <= 8'd52;
+							cell_y <= 7'd69;
+						end
 					end
 			6'd31: begin
-					if (c_31 == 2'b00) c_31 <= turn;
+					if (c_31 == 2'b00)
+						begin
+							c_31 <= turn;
+							cell_x <= 8'd74;
+							cell_y <= 7'd69;
+						end
 					end
 			6'd32: begin
-					if (c_32 == 2'b00) c_32 <= turn;
+					if (c_32 == 2'b00)
+						begin
+							c_32 <= turn;
+							cell_x <= 8'd96;
+							cell_y <= 7'd69;
+						end
 					end
 			6'd33: begin
-					if (c_33 == 2'b00) c_33 <= turn;
+					if (c_33 == 2'b00)
+						begin
+							c_33 <= turn;
+							cell_x <= 8'd118;
+							cell_y <= 7'd69;
+						end
 					end
 			6'd34: begin
-					if (c_34 == 2'b00) c_34 <= turn;
+					if (c_34 == 2'b00)
+						begin
+							c_34 <= turn;
+							cell_x <= 8'd140;
+							cell_y <= 7'd69;
+						end
 					end
 			6'd35: begin
-					if (c_35 == 2'b00) c_35 <= turn;
+					if (c_35 == 2'b00)
+						begin
+							c_35 <= turn;
+							cell_x <= 8'd8;
+							cell_y <= 7'd85;
+						end
 					end
 			6'd36: begin
-					if (c_36 == 2'b00) c_36 <= turn;
+					if (c_36 == 2'b00)
+						begin
+							c_36 <= turn;
+							cell_x <= 8'd30;
+							cell_y <= 7'd85;
+						end
 					end
 			6'd37: begin
-					if (c_37 == 2'b00) c_37 <= turn;
+					if (c_37 == 2'b00)
+						begin
+							c_37 <= turn;
+							cell_x <= 8'd52;
+							cell_y <= 7'd85;
+						end
 					end
 			6'd38: begin
-					if (c_38 == 2'b00) c_38 <= turn;
+					if (c_38 == 2'b00)
+						begin
+							c_38 <= turn;
+							cell_x <= 8'd74;
+							cell_y <= 7'd85;
+						end
 					end
 			6'd39: begin
-					if (c_39 == 2'b00) c_39 <= turn;
+					if (c_39 == 2'b00)
+						begin
+							c_39 <= turn;
+							cell_x <= 8'd96;
+							cell_y <= 7'd85;
+						end
 					end
 			6'd40: begin
-					if (c_40 == 2'b00) c_40 <= turn;
+					if (c_40 == 2'b00)
+						begin
+							c_40 <= turn;
+							cell_x <= 8'd118;
+							cell_y <= 7'd85;
+						end
 					end
 			6'd41: begin
-					if (c_41 == 2'b00) c_41 <= turn;
+					if (c_41 == 2'b00)
+						begin
+							c_41 <= turn;
+							cell_x <= 8'd140;
+							cell_y <= 7'd85;
+						end
 					end
 			6'd42: begin
-					if (c_42 == 2'b00) c_42 <= turn;
+					if (c_42 == 2'b00)
+						begin
+							c_42 <= turn;
+							cell_x <= 8'd8;
+							cell_y <= 7'd101;
+						end
 					end
 			6'd43: begin
-					if (c_43 == 2'b00) c_43 <= turn;
+					if (c_43 == 2'b00)
+						begin
+							c_43 <= turn;
+							cell_x <= 8'd30;
+							cell_y <= 7'd101;
+						end
 					end
 			6'd44: begin
-					if (c_44 == 2'b00) c_44 <= turn;
+					if (c_44 == 2'b00)
+						begin
+							c_44 <= turn;
+							cell_x <= 8'd52;
+							cell_y <= 7'd101;
+						end
 					end
 			6'd45: begin
-					if (c_45 == 2'b00) c_45 <= turn;
+					if (c_45 == 2'b00)
+						begin
+							c_45 <= turn;
+							cell_x <= 8'd74;
+							cell_y <= 7'd101;
+						end
 					end
 			6'd46: begin
-					if (c_46 == 2'b00) c_46 <= turn;
+					if (c_46 == 2'b00)
+						begin
+							c_46 <= turn;
+							cell_x <= 8'd96;
+							cell_y <= 7'd101;
+						end
 					end
 			6'd47: begin
-					if (c_47 == 2'b00) c_47 <= turn;
+					if (c_47 == 2'b00)
+						begin
+							c_47 <= turn;
+							cell_x <= 8'd118;
+							cell_y <= 7'd101;
+						end
 					end
 			6'd48: begin
-					if (c_48 == 2'b00) c_48 <= turn;
+					if (c_48 == 2'b00)
+						begin
+							c_48 <= turn;
+							cell_x <= 8'd140;
+							cell_y <= 7'd101;
+						end
 					end
 		endcase
 		
