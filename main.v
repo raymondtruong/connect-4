@@ -234,151 +234,151 @@ module main(CLOCK_50, PS2_DAT, PS2_CLK, KEY, LEDR);
 		// Write to the cell if nothing's there
 		case (cell_number)
 			6'd0: begin
-					if (c_0 == 2'b00) c_0 <= turn;
+					if (c_0 == 2'b00 & go) c_0 <= turn;
 					end
 			6'd1: begin
-					if (c_1 == 2'b00) c_1 <= turn;
+					if (c_1 == 2'b00 & go) c_1 <= turn;
 					end
 			6'd2: begin
-					if (c_2 == 2'b00) c_2 <= turn;
+					if (c_2 == 2'b00 & go) c_2 <= turn;
 					end
 			6'd3: begin
-					if (c_3 == 2'b00) c_3 <= turn;
+					if (c_3 == 2'b00 & go) c_3 <= turn;
 					end
 			6'd4: begin
-					if (c_4 == 2'b00) c_4 <= turn;
+					if (c_4 == 2'b00 & go) c_4 <= turn;
 					end
 			6'd5: begin
-					if (c_5 == 2'b00) c_5 <= turn;
+					if (c_5 == 2'b00 & go) c_5 <= turn;
 					end
 			6'd6: begin
-					if (c_6 == 2'b00) c_6 <= turn;
+					if (c_6 == 2'b00 & go) c_6 <= turn;
 					end
 			6'd7: begin
-					if (c_7 == 2'b00) c_7 <= turn;
+					if (c_7 == 2'b00 & go) c_7 <= turn;
 					end
 			6'd8: begin
-					if (c_8 == 2'b00) c_8 <= turn;
+					if (c_8 == 2'b00 & go) c_8 <= turn;
 					end
 			6'd9: begin
-					if (c_9 == 2'b00) c_9 <= turn;
+					if (c_9 == 2'b00 & go) c_9 <= turn;
 					end
 			6'd10: begin
-					if (c_10 == 2'b00) c_10 <= turn;
+					if (c_10 == 2'b00 & go) c_10 <= turn;
 					end
 			6'd11: begin
-					if (c_11 == 2'b00) c_11 <= turn;
+					if (c_11 == 2'b00 & go) c_11 <= turn;
 					end
 			6'd12: begin
-					if (c_12 == 2'b00) c_12 <= turn;
+					if (c_12 == 2'b00 & go) c_12 <= turn;
 					end
 			6'd13: begin
-					if (c_13 == 2'b00) c_13 <= turn;
+					if (c_13 == 2'b00 & go) c_13 <= turn;
 					end
 			6'd14: begin
-					if (c_14 == 2'b00) c_14 <= turn;
+					if (c_14 == 2'b00 & go) c_14 <= turn;
 					end
 			6'd15: begin
-					if (c_15 == 2'b00) c_15 <= turn;
+					if (c_15 == 2'b00 & go) c_15 <= turn;
 					end
 			6'd16: begin
-					if (c_16 == 2'b00) c_16 <= turn;
+					if (c_16 == 2'b00 & go) c_16 <= turn;
 					end
 			6'd17: begin
-					if (c_17 == 2'b00) c_17 <= turn;
+					if (c_17 == 2'b00 & go) c_17 <= turn;
 					end
 			6'd18: begin
-					if (c_18 == 2'b00) c_18 <= turn;
+					if (c_18 == 2'b00 & go) c_18 <= turn;
 					end
 			6'd19: begin
-					if (c_19 == 2'b00) c_19 <= turn;
+					if (c_19 == 2'b00 & go) c_19 <= turn;
 					end
 			6'd20: begin
-					if (c_20 == 2'b00) c_20 <= turn;
+					if (c_20 == 2'b00 & go) c_20 <= turn;
 					end
 			6'd21: begin
-					if (c_21 == 2'b00) c_21 <= turn;
+					if (c_21 == 2'b00 & go) c_21 <= turn;
 					end
 			6'd22: begin
-					if (c_22 == 2'b00) c_22 <= turn;
+					if (c_22 == 2'b00 & go) c_22 <= turn;
 					end
 			6'd23: begin
-					if (c_23 == 2'b00) c_23 <= turn;
+					if (c_23 == 2'b00 & go) c_23 <= turn;
 					end
 			6'd24: begin
-					if (c_24 == 2'b00) c_24 <= turn;
+					if (c_24 == 2'b00 & go) c_24 <= turn;
 					end
 			6'd25: begin
-					if (c_25 == 2'b00) c_25 <= turn;
+					if (c_25 == 2'b00 & go) c_25 <= turn;
 					end
 			6'd26: begin
-					if (c_26 == 2'b00) c_26 <= turn;
+					if (c_26 == 2'b00 & go) c_26 <= turn;
 					end
 			6'd27: begin
-					if (c_27 == 2'b00) c_27 <= turn;
+					if (c_27 == 2'b00 & go) c_27 <= turn;
 					end
 			6'd28: begin
-					if (c_28 == 2'b00) c_28 <= turn;
+					if (c_28 == 2'b00 & go) c_28 <= turn;
 					end
 			6'd29: begin
-					if (c_29 == 2'b00) c_29 <= turn;
+					if (c_29 == 2'b00 & go) c_29 <= turn;
 					end
 			6'd30: begin
-					if (c_30 == 2'b00) c_30 <= turn;
+					if (c_30 == 2'b00 & go) c_30 <= turn;
 					end
 			6'd31: begin
-					if (c_31 == 2'b00) c_31 <= turn;
+					if (c_31 == 2'b00 & go) c_31 <= turn;
 					end
 			6'd32: begin
-					if (c_32 == 2'b00) c_32 <= turn;
+					if (c_32 == 2'b00 & go) c_32 <= turn;
 					end
 			6'd33: begin
-					if (c_33 == 2'b00) c_33 <= turn;
+					if (c_33 == 2'b00 & go) c_33 <= turn;
 					end
 			6'd34: begin
-					if (c_34 == 2'b00) c_34 <= turn;
+					if (c_34 == 2'b00 & go) c_34 <= turn;
 					end
 			6'd35: begin
-					if (c_35 == 2'b00) c_35 <= turn;
+					if (c_35 == 2'b00 & go) c_35 <= turn;
 					end
 			6'd36: begin
-					if (c_36 == 2'b00) c_36 <= turn;
+					if (c_36 == 2'b00 & go) c_36 <= turn;
 					end
 			6'd37: begin
-					if (c_37 == 2'b00) c_37 <= turn;
+					if (c_37 == 2'b00 & go) c_37 <= turn;
 					end
 			6'd38: begin
-					if (c_38 == 2'b00) c_38 <= turn;
+					if (c_38 == 2'b00 & go) c_38 <= turn;
 					end
 			6'd39: begin
-					if (c_39 == 2'b00) c_39 <= turn;
+					if (c_39 == 2'b00 & go) c_39 <= turn;
 					end
 			6'd40: begin
-					if (c_40 == 2'b00) c_40 <= turn;
+					if (c_40 == 2'b00 & go) c_40 <= turn;
 					end
 			6'd41: begin
-					if (c_41 == 2'b00) c_41 <= turn;
+					if (c_41 == 2'b00 & go) c_41 <= turn;
 					end
 			6'd42: begin
-					if (c_42 == 2'b00) c_42 <= turn;
+					if (c_42 == 2'b00 & go) c_42 <= turn;
 					end
 			6'd43: begin
-					if (c_43 == 2'b00) c_43 <= turn;
+					if (c_43 == 2'b00 & go) c_43 <= turn;
 					end
 			6'd44: begin
-					if (c_44 == 2'b00) c_44 <= turn;
+					if (c_44 == 2'b00 & go) c_44 <= turn;
 					end
 			6'd45: begin
-					if (c_45 == 2'b00) c_45 <= turn;
+					if (c_45 == 2'b00 & go) c_45 <= turn;
 					end
 			6'd46: begin
-					if (c_46 == 2'b00) c_46 <= turn;
+					if (c_46 == 2'b00 & go) c_46 <= turn;
 					end
 			6'd47: begin
-					if (c_47 == 2'b00) c_47 <= turn;
+					if (c_47 == 2'b00 & go) c_47 <= turn;
 					end
 			6'd48: begin
-					if (c_48 == 2'b00) c_48 <= turn;
+					if (c_48 == 2'b00 & go) c_48 <= turn;
 					end
 		endcase
 		
