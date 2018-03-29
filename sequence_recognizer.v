@@ -1,37 +1,43 @@
-module sequence_recognizer(clock, enable, combos, winner);
+module shifter(clock, enable, input_seq, out);
+    input clock, enable;
+    input [451:0] input_seq;
+	 
+	 reg [451:0] sequence_reg;
+	 initial begin
+		{sequence_reg} = input_seq;
+	end
+	//assign sequence_reg = input_seq;
+    output reg [1:0] out;
+
+    always @(posedge clock)
+    begin 
+		out <= sequence_reg [451:450];
+		
+		if (enable)
+        sequence_reg <= sequence_reg << 2;
+		else
+			sequence_reg <= input_seq;
+	 end
+endmodule 
+
+
+
+// This module accepts strings of two-bit game pieces in sequence, and will set the two-bit output
+// to the same as the input piece when if it detects four of them in a row. Accepts a "go" signal
+// and a synchronous active-low reset.
+
+module sequence_recognizer(clock, enable, combos, out, cs);
 	input clock;
 	input enable;
+	output [3:0] cs;
+	wire reset = ~enable;
+    wire [1:0] in;
 	input [451:0] combos;
-	output reg [1:0] winner = 2'd0;
+	output reg [1:0] out = 2'd0;
 	
-	reg [451:0] sequence_reg;
-	reg [1:0] q;	
-	
-	initial begin
-		 sequence_reg = combos;
-	 end
-	
-	
-	always @(posedge clock)
-	begin
-		if (enable)
-		begin
-			q <= sequence_reg[451:450];
-			sequence_reg <= sequence_reg << 2;
-		end
-		else
-			sequence_reg <= combos;
-	end
-	
-	 
-	
-	
-	
-	 
-	 
-	 
-	 
-	
+    shifter ss(clock, enable, combos, in);
+
+	assign cs = current_state;
 	reg [3:0] current_state, next_state;
 
 	localparam INITIAL = 4'd0,
@@ -50,48 +56,53 @@ module sequence_recognizer(clock, enable, combos, winner);
 		case (current_state)
 		
 			INITIAL: begin
-					if (q == 2'b01) next_state = RED_1;
-					else if (q == 2'b10) next_state = YELLOW_1;
+					if (in == 2'b01) next_state = RED_1;
+					else if (in == 2'b10) next_state = YELLOW_1;
 					else next_state = INITIAL;
 				end
 			RED_1: begin
-					if (q == 2'b01) next_state = RED_2;
-					else if (q == 2'b10) next_state = YELLOW_1;
+					if (in == 2'b01) next_state = RED_2;
+					else if (in == 2'b10) next_state = YELLOW_1;
 					else next_state = INITIAL;
 				end
 			RED_2: begin
-					if (q == 2'b01) next_state = RED_3;
-					else if (q == 2'b10) next_state = YELLOW_1;
+					if (in == 2'b01) next_state = RED_3;
+					else if (in == 2'b10) next_state = YELLOW_1;
 					else next_state = INITIAL;
 				end
 			RED_3: begin
-					if (q == 2'b01) next_state = RED_WIN;
-					else if (q == 2'b10) next_state = YELLOW_1;
+					if (in == 2'b01) next_state = RED_WIN;
+					else if (in == 2'b10) next_state = YELLOW_1;
 					else next_state = INITIAL;
 				end
 			RED_WIN: next_state = RED_WIN;
 			YELLOW_1: begin
-					if (q == 2'b01) next_state = RED_1;
-					else if (q == 2'b10) next_state = YELLOW_2;
+					if (in == 2'b01) next_state = RED_1;
+					else if (in == 2'b10) next_state = YELLOW_2;
 					else next_state = INITIAL;
 				end
 			YELLOW_2: begin
-					if (q == 2'b01) next_state = RED_1;
-					else if (q == 2'b10) next_state = YELLOW_3;
+					if (in == 2'b01) next_state = RED_1;
+					else if (in == 2'b10) next_state = YELLOW_3;
 					else next_state = INITIAL;
 				end
 			YELLOW_3: begin
-					if (q == 2'b01) next_state = RED_1;
-					else if (q == 2'b10) next_state = YELLOW_WIN;
+					if (in == 2'b01) next_state = RED_1;
+					else if (in == 2'b10) next_state = YELLOW_WIN;
 					else next_state = INITIAL;
 				end
-			YELLOW_WIN: next_state = YELLOW_WIN;			
+			YELLOW_WIN: next_state = YELLOW_WIN;
+			default: next_state = INITIAL;
+			
 		endcase
 	end
    
 	// State register
 	always @(posedge clock)
 	begin
+		if (reset)
+			current_state <= INITIAL;
+		else
 			current_state <= next_state;
 	end
 	
@@ -99,11 +110,11 @@ module sequence_recognizer(clock, enable, combos, winner);
 	always @(*)
 	begin
 		if (current_state == RED_WIN) 
-			winner <= 2'b01;
+			out <= 2'b01;
 		else if (current_state == YELLOW_WIN)
-			winner <= 2'b10;
+			out <= 2'b10;
 		else
-			winner <= 2'b00;
+			out <= 2'b00;
 	end
 	
 endmodule

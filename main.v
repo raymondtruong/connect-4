@@ -1,4 +1,4 @@
-module main(CLOCK_50, PS2_DAT, PS2_CLK, KEY, LEDR, HEX0,
+module main(CLOCK_50, PS2_DAT, PS2_CLK, KEY, LEDR, HEX0, HEX1, HEX2, HEX3, HEX4,
 		VGA_CLK,   						//	VGA Clock 
  		VGA_HS,							//	VGA H_SYNC 
  		VGA_VS,							//	VGA V_SYNC 
@@ -17,6 +17,10 @@ module main(CLOCK_50, PS2_DAT, PS2_CLK, KEY, LEDR, HEX0,
 	input PS2_DAT, PS2_CLK;
 	input [3:0] KEY;
 	output [6:0] HEX0;
+	output [6:0] HEX1;
+	output [6:0] HEX2;
+	output [6:0] HEX3;
+	output [6:0] HEX4;
 	output [9:0] LEDR;	
 	
 	wire reset = ~KEY[3];
@@ -682,10 +686,21 @@ control c0(
 	/////////////////////////////////////////////////////////////////////////////
 	
 	wire [1:0] winner;
-	sequence_recognizer rec(CLOCK_50, ~insert, combos, winner);
+	wire [3:0] cs;
+	sequence_recognizer rec(CLOCK_50, ~insert, combos, winner, cs );
 	
+	
+	// HEXES & LEDR
+	assign LEDR[0] = insert;
+	assign LEDR[1] = ~insert;
+	assign LEDR[2] = writeEn;
 	
 	decoder d00(HEX0, {1'b0, 1'b0, winner});
+	//USED TO SEE CURRENT STATE
+	decoder d01(HEX1, cs);
+	
+
+	
 	
 	
 	
