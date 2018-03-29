@@ -13,11 +13,6 @@ add wave {/*}
 # clock
 force {CLOCK_50} 0 0, 1 1 -repeat 2
 
-
-
-
-
-
 # simulate win
 
 force {valid} 1

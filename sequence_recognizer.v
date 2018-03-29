@@ -41,14 +41,14 @@ module sequence_recognizer(clock, enable, combos, out, cs);
 	reg [3:0] current_state, next_state;
 
 	localparam INITIAL = 4'd0,
-				  RED_1 = 4'd1,
-				  RED_2 = 4'd2,
-				  RED_3 = 4'd3,
-				  RED_WIN = 4'd4,
-				  YELLOW_1 = 4'd5,
-				  YELLOW_2 = 4'd6,
-				  YELLOW_3 = 4'd7,
-				  YELLOW_WIN = 4'd8;
+				  BLUE_1 = 4'd1,
+				  BLUE_2 = 4'd2,
+				  BLUE_3 = 4'd3,
+				  BLUE_WIN = 4'd4,
+				  RED_1 = 4'd5,
+				  RED_2 = 4'd6,
+				  RED_3 = 4'd7,
+				  RED_WIN = 4'd8;
 				  
 	// State table
 	always @(*)
@@ -56,45 +56,47 @@ module sequence_recognizer(clock, enable, combos, out, cs);
 		case (current_state)
 		
 			INITIAL: begin
-					if (in == 2'b01) next_state = RED_1;
-					else if (in == 2'b10) next_state = YELLOW_1;
+					if (in == 2'b01) next_state = BLUE_1;
+					else if (in == 2'b10) next_state = RED_1;
 					else next_state = INITIAL;
 				end
+			BLUE_1: begin
+					if (in == 2'b01) next_state = BLUE_2;
+					else if (in == 2'b10) next_state = RED_1;
+					else next_state = INITIAL;
+				end
+			BLUE_2: begin
+					if (in == 2'b01) next_state = BLUE_3;
+					else if (in == 2'b10) next_state = RED_1;
+					else next_state = INITIAL;
+				end
+			BLUE_3: begin
+					if (in == 2'b01) next_state = BLUE_WIN;
+					else if (in == 2'b10) next_state = RED_1;
+					else next_state = INITIAL;
+				end
+			BLUE_WIN: next_state = BLUE_WIN;
 			RED_1: begin
-					if (in == 2'b01) next_state = RED_2;
-					else if (in == 2'b10) next_state = YELLOW_1;
+					if (in == 2'b01) next_state = BLUE_1;
+					else if (in == 2'b10) next_state = RED_2;
 					else next_state = INITIAL;
 				end
 			RED_2: begin
-					if (in == 2'b01) next_state = RED_3;
-					else if (in == 2'b10) next_state = YELLOW_1;
+					if (in == 2'b01) next_state = BLUE_1;
+					else if (in == 2'b10) next_state = RED_3;
 					else next_state = INITIAL;
 				end
 			RED_3: begin
-					if (in == 2'b01) next_state = RED_WIN;
-					else if (in == 2'b10) next_state = YELLOW_1;
+					if (in == 2'b01) next_state = BLUE_1;
+					else if (in == 2'b10) next_state = RED_WIN;
 					else next_state = INITIAL;
 				end
 			RED_WIN: next_state = RED_WIN;
-			YELLOW_1: begin
-					if (in == 2'b01) next_state = RED_1;
-					else if (in == 2'b10) next_state = YELLOW_2;
-					else next_state = INITIAL;
-				end
-			YELLOW_2: begin
-					if (in == 2'b01) next_state = RED_1;
-					else if (in == 2'b10) next_state = YELLOW_3;
-					else next_state = INITIAL;
-				end
-			YELLOW_3: begin
-					if (in == 2'b01) next_state = RED_1;
-					else if (in == 2'b10) next_state = YELLOW_WIN;
-					else next_state = INITIAL;
-				end
-			YELLOW_WIN: next_state = YELLOW_WIN;
 			default: next_state = INITIAL;
 			
 		endcase
+		
+
 	end
    
 	// State register
@@ -109,9 +111,9 @@ module sequence_recognizer(clock, enable, combos, out, cs);
 	// Output logic
 	always @(*)
 	begin
-		if (current_state == RED_WIN) 
+		if (current_state == BLUE_WIN) 
 			out <= 2'b01;
-		else if (current_state == YELLOW_WIN)
+		else if (current_state == RED_WIN)
 			out <= 2'b10;
 		else
 			out <= 2'b00;

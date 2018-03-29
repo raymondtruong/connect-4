@@ -25,9 +25,7 @@ module main(CLOCK_50, PS2_DAT, PS2_CLK, KEY, LEDR, HEX0, HEX1, HEX2, HEX3, HEX4,
 	
 	wire reset = ~KEY[3];
 	
-	// VGA
-	wire [2:0] player_color; 
-     assign player_color = turn == 2'b01 ? 3'b100 : 3'b001; 
+	// VGA 
  	reg [7:0] cell_x; 
  	reg [6:0] cell_y; 
 	wire resetn; 
@@ -131,6 +129,8 @@ control c0(
 	// Keep track of whose turn it is (and also which piece to insert)
 	wire [1:0] turn;
 	turn_tracker tt(insert, reset, turn);
+	wire [2:0] player_color; 
+     assign player_color = turn == 2'b01 ? 3'b100 : 3'b001;
 	
 	
 	
