@@ -1,4 +1,4 @@
-module main(CLOCK_50, PS2_DAT, PS2_CLK, KEY, LEDR, HEX0, HEX1, HEX2, HEX3, HEX4,
+module main(CLOCK_50, PS2_DAT, PS2_CLK, SW, KEY, LEDR, HEX0, HEX1, HEX2, HEX3, HEX4,
 		VGA_CLK,   						//	VGA Clock 
  		VGA_HS,							//	VGA H_SYNC 
  		VGA_VS,							//	VGA V_SYNC 
@@ -16,6 +16,7 @@ module main(CLOCK_50, PS2_DAT, PS2_CLK, KEY, LEDR, HEX0, HEX1, HEX2, HEX3, HEX4,
 	input CLOCK_50;
 	input PS2_DAT, PS2_CLK;
 	input [3:0] KEY;
+	input [9:0] SW;
 	output [6:0] HEX0;
 	output [6:0] HEX1;
 	output [6:0] HEX2;
@@ -43,19 +44,19 @@ module main(CLOCK_50, PS2_DAT, PS2_CLK, KEY, LEDR, HEX0, HEX1, HEX2, HEX3, HEX4,
 	// Keep track of whose turn it is (and also which piece to insert)
 	wire [1:0] turn;
 	turn_tracker tt(insert, reset, turn);
-		 wire [2:0] player_color; 
+	wire [2:0] player_color; 
 
 	assign player_color = turn == 2'b01 ? 3'b100 : 3'b001;
 
 
-
-	
+	// AI
+	wire ai = SW[9];
+	wire [5:0] randomized;
+	randomizer ra(select, CLOCK_50, randomized);
 	
 	// VGA 
  	reg [7:0] cell_x; 
  	reg [6:0] cell_y; 
-	wire resetn; 
- 	assign resetn = KEY[2]; 
 
  	 
  	// Do not change the following outputs 
@@ -78,7 +79,7 @@ module main(CLOCK_50, PS2_DAT, PS2_CLK, KEY, LEDR, HEX0, HEX1, HEX2, HEX3, HEX4,
 	// Define the number of colours as well as the initial background
 	// image file (.MIF) for the controller.
 	vga_adapter VGA(
-			.resetn(resetn),
+			.resetn(reset),
 			.clock(CLOCK_50),
 			.colour(player_color),
 			.x(cell_x),
@@ -104,7 +105,7 @@ module main(CLOCK_50, PS2_DAT, PS2_CLK, KEY, LEDR, HEX0, HEX1, HEX2, HEX3, HEX4,
 // Instansiate datapath
 datapath d0(
 	.clk(CLOCK_50), 
-	.resetn(KEY[2]),
+	.resetn(reset),
 	.writeEnable(writeEn),
 	.color(player_color),
 	.inX(cell_x),
@@ -117,7 +118,7 @@ datapath d0(
 // Instansiate FSM control
 control c0(
 	.clk(CLOCK_50),
-	.resetn(KEY[2]),
+	.resetn(reset),
 	.go(insert),
 	.writeEnable(writeEn)	
 );
@@ -193,32 +194,39 @@ control c0(
 
 	always @(posedge select)
 	begin
-	
+		
 		// Determine which column to insert into
-		case (outCode)
-			KEY_Z: begin
-					 column <= 5'd0;
-					 end
-			KEY_X: begin
-					 column <= 5'd1;
-					 end
-			KEY_C: begin
-					 column <= 5'd2;
-					 end
-			KEY_V: begin
-					 column <= 5'd3;
-					 end
-			KEY_B: begin
-			       column <= 5'd4;
-					 end
-			KEY_N: begin
-			       column <= 5'd5;
-					 end
-			KEY_M: begin
-			       column <= 5'd6; 
-					 end
-		endcase
-
+		if (~ai)
+		begin
+			case (outCode)
+				KEY_Z: begin
+						 column <= 5'd0;
+						 end
+				KEY_X: begin
+						 column <= 5'd1;
+						 end
+				KEY_C: begin
+						 column <= 5'd2;
+						 end
+				KEY_V: begin
+						 column <= 5'd3;
+						 end
+				KEY_B: begin
+						 column <= 5'd4;
+						 end
+				KEY_N: begin
+						 column <= 5'd5;
+						 end
+				KEY_M: begin
+						 column <= 5'd6; 
+						 end
+			endcase
+		end
+		else
+			begin
+				column <= randomized; 
+			end
+		end
 	end
 
 	always @(negedge select)
