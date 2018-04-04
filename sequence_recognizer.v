@@ -23,7 +23,7 @@ endmodule
 
 
 // This module accepts strings of two-bit game pieces in sequence, and will set the two-bit output
-// to the same as the input piece when if it detects four of them in a row. Accepts a "go" signal
+// to the same as the input piece when if it detects four of them in a row. Accepts a "enable" signal
 // and a synchronous active-low reset.
 
 module sequence_recognizer(clock, enable, combos, out, cs);
@@ -37,8 +37,8 @@ module sequence_recognizer(clock, enable, combos, out, cs);
 	
     shifter ss(clock, enable, combos, in);
 
-	assign cs = current_state;
 	reg [3:0] current_state, next_state;
+	assign cs = current_state;
 
 	localparam INITIAL = 4'd0,
 				  BLUE_1 = 4'd1,

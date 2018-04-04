@@ -22,14 +22,41 @@ module main(CLOCK_50, PS2_DAT, PS2_CLK, KEY, LEDR, HEX0, HEX1, HEX2, HEX3, HEX4,
 	output [6:0] HEX3;
 	output [6:0] HEX4;
 	output [9:0] LEDR;	
-	
 	wire reset = ~KEY[3];
+
+
+		// Credit: https://class.ee.washington.edu/271/hauck2/de1/keyboard/
+	wire valid, makeBreak;
+	wire [7:0] outCode;
+
+			localparam KEY_Z = 8'h1A,
+				  KEY_X = 8'h22,
+				  KEY_C = 8'h21,
+				  KEY_V = 8'h2A,
+				  KEY_B = 8'h32,
+				  KEY_N = 8'h31,
+				  KEY_M = 8'h3A,
+				  KEY_SPACE = 8'h29;
+	
+	wire insert = valid && makeBreak && outCode == KEY_SPACE;
+
+	// Keep track of whose turn it is (and also which piece to insert)
+	wire [1:0] turn;
+	turn_tracker tt(insert, reset, turn);
+		 wire [2:0] player_color; 
+
+	assign player_color = turn == 2'b01 ? 3'b100 : 3'b001;
+
+
+
+	
 	
 	// VGA 
  	reg [7:0] cell_x; 
  	reg [6:0] cell_y; 
 	wire resetn; 
  	assign resetn = KEY[2]; 
+
  	 
  	// Do not change the following outputs 
  	output			VGA_CLK;   				//	VGA Clock 
@@ -102,19 +129,13 @@ control c0(
 	/////////////////////////////////////////////////////////////////////////////
 	
 	
-	// Credit: https://class.ee.washington.edu/271/hauck2/de1/keyboard/
-	wire valid, makeBreak;
-	wire [7:0] outCode;
+
+
+
+
 	keyboard_press_driver keyboard(CLOCK_50, valid, makeBreak, outCode, PS2_DAT, PS2_CLK, reset);
 	
-	localparam KEY_Z = 8'h1A,
-				  KEY_X = 8'h22,
-				  KEY_C = 8'h21,
-				  KEY_V = 8'h2A,
-				  KEY_B = 8'h32,
-				  KEY_N = 8'h31,
-				  KEY_M = 8'h3A,
-				  KEY_SPACE = 8'h29;
+
 				  
 	wire select = valid && makeBreak && (outCode == KEY_Z ||
 										 outCode == KEY_X ||
@@ -123,15 +144,9 @@ control c0(
 										 outCode == KEY_B ||
 										 outCode == KEY_N ||
 										 outCode == KEY_M);
-								 
-	wire insert = valid && makeBreak && outCode == KEY_SPACE;
+								 	
 	
-	// Keep track of whose turn it is (and also which piece to insert)
-	wire [1:0] turn;
-	turn_tracker tt(insert, reset, turn);
-	wire [2:0] player_color; 
-     assign player_color = turn == 2'b01 ? 3'b100 : 3'b001;
-	
+
 	
 	
 	/////////////////////////////////////////////////////////////////////////////
@@ -687,7 +702,18 @@ control c0(
 	
 	wire [1:0] winner;
 	wire [3:0] cs;
-	sequence_recognizer rec(CLOCK_50, ~insert, combos, winner, cs );
+	//sequence_recognizer rec(CLOCK_50, ~insert, combos, winner, cs );
+
+	//TRY THE BELOW
+	sequence_recognizer rec(CLOCK_50, writeEN, combos, winner, cs );
+
+	wire player1_score_enable = winner == 2'b01 ? 1'b1 : 1'b0;
+	wire player2_score_enable = winner == 2'b10 ? 1'b1 : 1'b0;
+	score_system player1_ss(HEX3, player1_score_enable);
+	score_system player2_ss(HEX4, player2_score_enable);
+
+	//NEW STUFF ABOVE
+	
 	
 	
 	// HEXES & LEDR
@@ -698,10 +724,6 @@ control c0(
 	decoder d00(HEX0, {1'b0, 1'b0, winner});
 	//USED TO SEE CURRENT STATE
 	decoder d01(HEX1, cs);
-	
-
-	
-	
 	
 	
 endmodule

@@ -1,20 +1,18 @@
 vlib work
-vlog -timescale 1ns/1ns main.v
+vlog -timescale 1ns/1ns main_no_vga.v
 vlog -timescale 1ns/1ns keyboard_press_driver.v
 vlog -timescale 1ns/1ns keyboard_inner_driver.v
 vlog -timescale 1ns/1ns turn_tracker.v
 vlog -timescale 1ns/1ns sequence_recognizer.v
-vsim main
+vlog -timescale 1ns/1ns decoder.v
+vlog -timescale 1ns/1ns score_system.v
+vsim main_no_vga
 
 log {/*}
 add wave {/*}
 
 # clock
 force {CLOCK_50} 0 0, 1 1 -repeat 2
-
-
-
-
 
 
 # simulate win
