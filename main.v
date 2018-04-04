@@ -40,7 +40,6 @@ module main(CLOCK_50, PS2_DAT, PS2_CLK, SW, KEY, LEDR, HEX0, HEX1, HEX2, HEX3, H
 				  KEY_SPACE = 8'h29;
 	
 	wire insert = valid && makeBreak && outCode == KEY_SPACE;
-	
 
 	// Keep track of whose turn it is (and also which piece to insert)
 	wire [1:0] turn;
@@ -58,8 +57,6 @@ module main(CLOCK_50, PS2_DAT, PS2_CLK, SW, KEY, LEDR, HEX0, HEX1, HEX2, HEX3, H
 	// VGA 
  	reg [7:0] cell_x; 
  	reg [6:0] cell_y; 
-	wire resetn; 
- 	assign resetn = KEY[2]; 
 
  	 
  	// Do not change the following outputs 
@@ -82,7 +79,7 @@ module main(CLOCK_50, PS2_DAT, PS2_CLK, SW, KEY, LEDR, HEX0, HEX1, HEX2, HEX3, H
 	// Define the number of colours as well as the initial background
 	// image file (.MIF) for the controller.
 	vga_adapter VGA(
-			.resetn(resetn),
+			.resetn(reset),
 			.clock(CLOCK_50),
 			.colour(player_color),
 			.x(cell_x),
@@ -108,7 +105,7 @@ module main(CLOCK_50, PS2_DAT, PS2_CLK, SW, KEY, LEDR, HEX0, HEX1, HEX2, HEX3, H
 // Instansiate datapath
 datapath d0(
 	.clk(CLOCK_50), 
-	.resetn(KEY[2]),
+	.resetn(reset),
 	.writeEnable(writeEn),
 	.color(player_color),
 	.inX(cell_x),
@@ -121,7 +118,7 @@ datapath d0(
 // Instansiate FSM control
 control c0(
 	.clk(CLOCK_50),
-	.resetn(KEY[2]),
+	.resetn(reset),
 	.go(insert),
 	.writeEnable(writeEn)	
 );
